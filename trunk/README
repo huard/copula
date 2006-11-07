@@ -1,0 +1,17 @@
+The files in this directory are used to compute the probability of a copula model, given some set of empirical CDF. 
+Currently, only a subset of bivariate copulas are supported, described in the paper:
+Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
+
+The main function is bcs.m, which computes the probability for a collection of copula families. 
+By looking at this function, it is possible to understand what the code does. Look also at test_method.m.
+
+The code was written mostly by G. Evin and D. Huard. It uses and extends functions written by A. Perkins.
+This is not an public release. There is no implied warranty that the code provides correct result, although we certainly hope so. 
+
+I changed some of the docs and function names, and since I don't have Matlab installed anymore, I can't test it right now. Please forward any comments or bugs to 
+david.huard@gmail.com
+
+I'm not officially maintaining the code, but I can help. 
+
+David Huard
+November 6, 2006
