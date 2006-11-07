@@ -1,30 +1,40 @@
-function c = copuladensity(u1,u2,type,par)
+function c = copulapdf(family, U, theta)
 
-%function c = densitecopulaarch(u,v,type,par)
+% function c = copulapdf(family, U, theta)
 %
-% Function that gives the density of a copula for all (u,v) in [0,1]x[0,1]
+% Function that gives the density of a copula for all U = (u,v) and all parameters
 %
-% INPUTS:   u and v are vectors in [0,1]x[0,1]
-%           type is one of the list {'ind', 'gaussian', 'gumbel' 'clayton' 'sim' 'frank' 'gb' 'amh' 'joe'}
-%           par is the parameter of the copula, none for the independant copula
+% INPUTS:   u and v are Nx2 vectors in [0,1]x[0,1]
+%           family is one of the list {'ind', 'gaussian', 'gumbel' 'clayton' 'sim' 'frank' 'gb' 'amh' 'joe'}
+%           theta is the 1xM vector of copula parameter.
 %
-% OUTPUTS:	c, a vectors that contains the results of the copula on the
-% points (u1,u2)
+% OUTPUTS:  c, a NxM matrix that contains the results of the copula on the
+% points (u,v) for the parameters theta 
 %
 % Guillaume EVIN
 %
 %  13 May, 2004.
 
-if (nargin < 3)
-    error('la fonction nécessite au moins trois arguments');
-end
+u = U(:,1)
+v = U(:,2)
+N = size(U)(1)
+M = size(theta)(2)
+L = size(theta)(1)
+if L > 1 && L != N
+   error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
 
-ld = length(u1);
-lp = length(par);
+% Shape vectors into matrices to compute the pdf for all values of (u,v)
+% and all parameters without looping.
+u = repmat(u, 1, M)
+v = repmat(v, 1, M)
+theta = repmat(theta, N, 1)
 
-s1 = size(u1);
-s2 = size(u2);
-s3 = size(par);
+%ld = length(u1);
+%lp = length(par);
+
+%s1 = size(u1);
+%s2 = size(u2);
+%s3 = size(par);
 
 % case of the numerical integration with Matlab, must accept a scalar
 % in first argument and a vector in second argument
