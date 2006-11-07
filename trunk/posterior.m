@@ -5,6 +5,7 @@ function p = posterior(par,data,type)
 	% par: Copula parameter
 	% data: NX2 vector (u,v)
 	% type: Copula family
+    % G. Evin, 2006
 
 	% Compute density
         d = densitecopulaarch(data(:,1),data(:,2),type,par);
