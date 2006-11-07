@@ -5,6 +5,16 @@ Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, Journal of Compu
 The main function is bcs.m, which computes the probability for a collection of copula families. 
 By looking at this function, it is possible to understand what the code does. Look also at test_method.m.
 
+
+Functions description
+--------------------
+
+tauboundaries: Return the domain spanned by Kendall's tau.
+restrict_tau: Constrain bounds in tau to the domain convered by the copula.  
+copulastat: Kendall's rank correlation for a copula.
+
+
+
 The code was written mostly by G. Evin and D. Huard. It uses and extends functions written by A. Perkins.
 This is not an public release. There is no implied warranty that the code provides correct result, although we certainly hope so. 
 
