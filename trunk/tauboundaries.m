@@ -1,43 +1,39 @@
-function [tau_min,tau_max] = int_tau(type);
-% Function [tau_min, tau_max] = int_tau(type)
+function [tau_min,tau_max] = tauboundaries(type);
 %
-% Return the minimum and maximum value that can take Kendall's tau for a given copula.
-% Input 
-%      type: A copula from the set:{clayton, gumbel, frank, arch12, arch14, joe, fgm, amh}
+% Function [tau_min, tau_max] = tauboundaries(type)
+%
+% Return the minimum and maximum Kendall's tau spanned by a given copula family.
+% 
+% type: A copula from the set:{clayton, gumbel, frank, arch12, arch14, joe, fgm, amh}
+%
+% Pourquoi tau_max de amh etait a .3269 au lieu de 1/3 ?
 
-tau_min=-.95;
-tau_max=.95;
-switch lower(type)
-    case {'clayton' 'gumbel'}
-        if tau_min < 0
-            tau_min = eps;
-        end
-        
-    case 'frank'
-        
-    case {'arch12' 'arch14'}
-        if tau_min < 1/3
-            tau_min = 1/3;
-        end
-        
-    case {'joe'}
-        if tau_min <= 0
-            tau_min = eps;
-        end
-        
-    case 'fgm'
-        if tau_min < -2/9
-            tau_min = -2/9;
-        end
-        if tau_max > 2/9
-            tau_max = 2/9;
-        end
-        
+tau_min = -1;
+tau_max = 1;
+switch lower(type)    
+
     case 'amh'
-        if tau_min < -0.1817
-            tau_min = -0.1817;
-        end
-        if tau_max > 0.3269
-            tau_max = 0.3269;
-        end
+        tau_min = -0.181726;
+        tau_max = 1/3
+
+    case {'arch12' 'arch14'}
+        tau_min = 1/3;
+
+    case 'clayton' 
+        tau_min = eps;
+
+    case 'fgm'
+        tau_min = -2/9;
+        tau_max = 2/9;    
+
+    case 'frank'
+
+    case 'gaussian'
+
+    case 'gumbel'
+	tau_min = 0.
+
+    otherwise 
+        error('Copula family not recognized: %s\n', type)
+
 end
