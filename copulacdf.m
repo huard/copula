@@ -1,67 +1,76 @@
-function c = copula(u1,u2,type,par)
-% Function C = copula(u,v,type,par)
+function c = copulacdf(family, U, alpha)
 %
-% Return  C(u,v|par) for the given copula family.
+%   Function C = COPULACDF(FAMILY, U, ALPHA)
+%
+%   Return  C(u,v|alpha) for the given copula family.
 % 
-% Input:
-% u,v: quantiles
-% Type: copula family, one of 'Ind', 'Gumbel', 'Clayton', 'FGM', 'AMH', 'GB', 'Frank', 'Joe'.
-% par: copula parameter
+%   Input:
+%       U:      quantiles (Nx2)
+%       FAMILY: one of 'Ind', 'Gumbel', 'Clayton', 'FGM', 'AMH', 'GB', 'Frank', 'Joe'.
+%       ALPHA:  copula parameter
 % 
-% G. Evin, 2005
 
-if (nargin < 3)
-    error('Function copula takes a least three arguments.');
+%   G. Evin, 2005
+%   D. Huard, 2006
+
+% Check alpha is in the domain covered by the family.
+pass = check_alpha(family, alpha);
+if ~all(pass)
+    error('Some parameters are not included in the domain.\n%f', alpha(~pass))
 end
 
-switch lower(type)
+% Check u,v are in [0,1]^2
+if any( (U < 0) | (U > 1) )
+    error('Some quantiles are outside the unit hypercube.')
+end
+
+sU = size(U);
+sA = size(alpha);
+
+N = sU(1);
+M = sA(2);
+L = sA(1);
+
+if L > 1 && L ~= N
+   error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
+end
+
+% Shape vectors into matrices to compute the pdf for all values of (u,v)
+% and all parameters without loops.
+u = U(:,1);
+v = U(:,2);
+u = repmat(u, 1, M);
+v = repmat(v, 1, M);
+alpha = repmat(alpha, N, 1);
+
+% Compute copula cdf
+switch lower(family)
     case 'ind' % Independent
-        c = u1.*u2;
+        c = u.*v;
         
-    case 'gumbel' % Gumbel
-        
-        if sum(par < 1)>=1
-            error('theta >= 1 for Gumbel copula.');
-        end
-        
-        a1 = (-log(u1)).^par;
-        a2 = (-log(u2)).^par;
-        a3 = 1./par;
+    case 'gumbel' % Gumbel       
+        a1 = (-log(u)).^alpha;
+        a2 = (-log(v)).^alpha;
+        a3 = 1./alpha;
         c = exp(-(a1+a2).^a3);
         
     case 'clayton'
-        if sum(par < 0)>=1
-            error('theta >= 0 for Clayton copula.');
-        end
-        c = (u1.^(-par)+u2.^(-par)-1).^(-1./par);
+        c = (u.^(-alpha)+v.^(-alpha)-1).^(-1./alpha);
         
     case 'fgm' % Farlie, Gumbel, Morgenstern
-        c = u1.*u2.*(1+par.*(1-u1).*(u2));
+        c = u.*v.*(1+alpha.*(1-u).*(v));
         
     case 'amh' % Ali, Mikhail, Haq
-        if sum(par < -1 || par >= 1)>=1
-            error('theta in [-1,1[ for Ali, Mikhail and Haq copula.');
-        end
-        c = (u1.*u2)./(1-par.*(1-u1).*(u2));
+        c = (u.*v)./(1-alpha.*(1-u).*(v));
         
     case 'gb' % Gumbel & Barnett
-        if sum(par < 0 || par > 1)>=1
-            error('theta in [0,1] for Gumbel & Barnett copula.');
-        end
-        c = u1.*u2.*exp(-par.*log(u1).*log(u1));
+        c = u.*v.*exp(-alpha.*log(u).*log(u));
         
     case 'frank' % Frank, 1979
-        if sum(par == 0)>=1
-            error('theta != 0 for Frank copula.');
-        end
-        c = (-1./par).*log(1+(exp(-par.*u1)-1).*(exp(-par.*u2)-1)./(exp(-par)-1));
+        c = (-1./alpha).*log(1+(exp(-alpha.*u)-1).*(exp(-alpha.*v)-1)./(exp(-alpha)-1));
         
     case 'joe' % Joe, 1997
-        if sum(par < 1)>=1
-            error('theta >= 1 for Joe copula.');
-        end
-        c = 1 - (((1-u1).^par)+((1-u2).^par)-((1-u1).^par).*((1-u2).^par)).^(1./par);
+        c = 1 - (((1-u).^alpha)+((1-v).^alpha)-((1-u).^alpha).*((1-v).^alpha)).^(1./alpha);
         
-    otherwise
-        error('Unknown copula family:',type);
+
 end
