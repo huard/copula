@@ -30,10 +30,15 @@ if any(~pass)
 end
 fprintf('Passed !\n')
 
-
+warning off COPULA:BadParameter
 % TEST COPULASTAT
 fprintf('Test copulastat ... ')
-families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'GB', 'Joe', 'FGM', 'Arch12', 'Arch14'};
+families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'GB', 'Joe', 'FGM', 'Arch12', 'Arch14', 'Frank'};
+alpha = linspace(-5,5,50);
+for i=1:length(families)
+    pass = check_alpha(families{i}, alpha);
+    tau = copulastat(families{i}, alpha(pass));
+end
 for i=1:length(families)
     try
         tau = copulastat(families{i}, -2)
@@ -82,7 +87,7 @@ if size(pdf) ~= size(alpha)
     error('Bad shape for array returned by copulapdf.')
 end
 
-warning off 'COPULA:BadParameter'
+
 alpha = linspace(-5,5,50);
 U = [[.3,.4];[.5,.6]];
 for i=1:length(families)
@@ -94,6 +99,15 @@ fprintf('Passed !\n')
 % TEST COPULACDF
 
 % TEST COPULA_LIKE
+
+% TEST TAUJACOBIAN
+fprintf('Test taujacobian ... ')
+families = {'Clayton', 'Gumbel', 'Gaussian', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank'};
+for i=1:length(families)
+    pass = check_alpha(families{i}, alpha);
+    j = taujacobian(families{i}, alpha(pass));
+end
+fprintf('Passed !\n')
 
 % TEST BCS
 

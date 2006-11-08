@@ -29,9 +29,7 @@ if nargin < 2
     error('Requires two input arguments.');
 end
 
-warning off COPULA:BadParameter
 pass = check_alpha(family, alpha);
-warning on COPULA:BadParameter
 
 if any(~pass)
     error('Invalid parameters')
