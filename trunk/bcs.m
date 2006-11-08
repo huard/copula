@@ -10,19 +10,24 @@ function p = bcs(family, U, boundaries, prior_tau)
 %       U         : Nx2 matrix of quantiles (u,v).
 %       BOUNDARIES: Integration boundaries on Kendall's tau 
 %                   Default: [-.95,.95])
-%       PRIOR_TAU : Function handle returning the prior for TAU. Not
+%       PRIOR_TAU : Function handle returning the parent prior for TAU. Not
 %                   implemented yet. Current: uniform 
 %
 %   OUTPUT:         The weight of each copula family.
 %
 
-% Reference
-% Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
-% Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
+%   Reference
+%   Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
+%   Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
+
+%   TODO: Implement prior_tau
+
 
 % Set defaults
 if nargin <= 3
     prior_tau = inline('1')
+else
+    printf('Sorry, this feature is not implemented.')
 end
 
 if nargin <= 2

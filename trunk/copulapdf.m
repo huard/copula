@@ -5,7 +5,7 @@ function c = copulapdf(family, U, alpha)
 %   Return c(u,v|ALPHA), the copula density. 
 %
 %   INPUTS
-%       FAMILY: one of {'ind', 'gaussian', 'gumbel' 'clayton' 'sim' 'frank' 'gb' 'amh' 'joe'}       
+%       FAMILY: one of {'ind', 'gaussian', 'gumbel' 'clayton' 'frank' 'amh' 'joe' 'fgm' 'arch12' 'arch14'}       
 %       U: Nx2 vector (u,v) in [0,1]^2.
 %       ALPHA: 1xM vector of copula parameters
 %           or 
