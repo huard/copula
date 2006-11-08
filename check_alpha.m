@@ -1,12 +1,19 @@
 function pass = check_alpha(family, alpha)
-
-%   FUNCTION PASS = CHECK_ALPHA(FAMILY, ALPHA)
-%   
-%   Check the ALPHA is a valid parameter for the copula family.
-%   Print a message if some parameters are not valid.
 %
+%   FUNCTION PASS = CHECK_ALPHA(FAMILY, ALPHA [, WARN])
+%   
+%   Check ALPHA is a valid parameter for the copula family.
+%
+%   INPUT
+%       FAMILY: One of {'amh' 'arch12' 'arch14' 'clayton' 'frank'
+%               'gaussian' 't' 'fgm' 'gumbel'}
+%       ALPHA:    Array of copula parameters. 
+%   
+%   OUTPUT
+%       PASS: Boolean array. True if tau is in the domain, False otherwise.
+%       
 
-%   D. Huard, Nov. 2006
+% D. Huard, Nov. 2006
 
 switch lower(family)
     
@@ -35,29 +42,28 @@ switch lower(family)
         error('Copula family ''%s'' not recognized', family)
 end
 
-if any(~pass)
+if any(~pass) 
+    wrong = mat2str(alpha(~pass))
     switch lower(family)
-        case {'gaussian' 't'}      
-            fprintf('ALPHA must be in [-1, 1] for the %s copula.', family);
+        case {'gaussian' 't' 'fgm'}      
+            warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] for the %s copula.\n ', family);
             
         case 'clayton'
-            fprintf('ALPHA must be nonnegative for the Clayton copula.');
+            warning('COPULA:BadParameter', 'ALPHA must be nonnegative for the Clayton copula.');
             
         case {'gumbel' 'joe'}
-            fprintf('ALPHA must be greater than or equal to 1 for the %s copula.', family);
+            warning('COPULA:BadParameter', 'ALPHA must be greater than or equal to 1 for the %s copula.', family);
             
         case 'amh'
-            fprintf('ALPHA must be in [-1,1[ for the Ali-Mikhail-Haq copula.');
+            warning('COPULA:BadParameter', 'ALPHA must be in [-1,1[ for the Ali-Mikhail-Haq copula.');
             
         case 'frank'
-            fprintf('ALPHA must not be equal to 0 for Frank copula.');
+            warning('COPULA:BadParameter', 'ALPHA must not be equal to 0 for Frank copula.');
             
         case 'gb'
-            fprintf('ALPHA must be in [0,1] for the Gumbel-Barnett copula.');
+            warning('COPULA:BadParameter', 'ALPHA must be in [0,1] for the Gumbel-Barnett copula.');
             
         case {'arch12' 'arch14'}
-            fprintf('ALPHA must be greater than or equal to 1 for the %s copula.', family);
+            warning('COPULA:BadParameter', 'ALPHA must be greater than or equal to 1 for the %s copula.', family);
     end
-    fprintf('\nInvalid parameters:')
-    disp(alpha(~pass))
 end
