@@ -1,11 +1,17 @@
 function tau = copulastat(family,alpha)
-%   COPULASTAT Kendall's rank correlation for a copula.
 %
-%   TAU = COPULASTAT(FAMILY,ALPHA) returns Kendall's rank correlation TAU
-%   corresponding to a bivariate copula with parameter ALPHA.
-%   FAMILY is one of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH', 'GB', 
-%   'Joe', 'FGM', 'Arch12', Arch14'.
+%   TAU = COPULASTAT(FAMILY,ALPHA)
+%   
+%   Returns Kendall's rank correlation TAU
 %
+%   INPUT
+%       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH', 'GB', 
+%               'Joe', 'FGM', 'Arch12', 'Arch14'.
+%       ALPHA: Copula parameter.
+%   
+%   OUTPUT
+%       TAU: Kendall's rank correlation.
+%   
 %   Example:
 %      % Determine the theoretical rank correlation coefficient for a
 %      % bivariate Gaussian copula with linear correlation parameter -0.7071
