@@ -4,11 +4,14 @@ function c = copulacdf(family, U, alpha)
 %
 %   Return  C(u,v|alpha) for the given copula family.
 % 
-%   Input:
-%       U:      quantiles (Nx2)
-%       FAMILY: one of 'Ind', 'Gumbel', 'Clayton', 'FGM', 'AMH', 'GB', 'Frank', 'Joe'.
-%       ALPHA:  copula parameter
+%   INPUT:
+%       FAMILY: One of 'Ind', 'Gumbel', 'Clayton', 'FGM', 'AMH', 'GB', 'Frank', 'Joe'.
+%       U:      Quantiles (Nx2)       
+%       ALPHA:  Copula parameter (1xM)
 % 
+%   OUTPUT
+%       C:      Copula CDF (NxM)
+%
 
 %   G. Evin, 2005
 %   D. Huard, 2006

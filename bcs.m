@@ -1,19 +1,52 @@
-function p = bcs(types, data, bounds)
-% function probability = bcs(types, data, bounds)
+function p = bcs(family, U, boundaries, prior_tau)
 %
-% Function that returns the probability of copula models in types,
-% given a vector of bivariate empirical cdf.
+%   FUNCTION BCS(FAMILY, U, BOUNDARIES, PRIOR_TAU)
 %
-% INPUTS:   type is one of the list {'ind' 'gumbel' 'clayton' 'sim' 'frank' 'gb' 'amh' 'joe'}
-%           data is the matrix (u,v), the empirical cdf.
-%           bounds: integration boundary on Kendall's tau.
+%   Bayesian Copula Selection
+%   Return the weight of each copula family.
 %
-% OUTPUTS:  The probability of each copula model.
+%   INPUT   
+%       FAMILY    : Subset of {'Ind' 'Gumbel' 'Clayton' 'Frank' 'AMH' 'Joe' 'Arch12' 'Arch14'}
+%       U         : Nx2 matrix of quantiles (u,v).
+%       BOUNDARIES: Integration boundaries on Kendall's tau 
+%                   Default: [-.95,.95])
+%       PRIOR_TAU : Function handle returning the prior for TAU. Not
+%                   implemented yet. Current: uniform 
+%
+%   OUTPUT:         The weight of each copula family.
+%
 
+% Reference
+% Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
+% Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
 
-for i=1:length(types)
-    [tau_min,tau_max] = int_tau(types{i});
-    parmin = copulaparam(char(types{i}),max(bounds(1), tau_min));
-    parmax = copulaparam(char(types{i}),min(bounds(2), tau_max));
-    p(i) = quadg('posterior',parmin,parmax,1e-3,[0,128],data,char(types{i}));
+% Set defaults
+if nargin <= 3
+    prior_tau = inline('1')
+end
+
+if nargin <= 2
+    boundaries = [-.95, .95]
+end
+
+% Make sure U is in the unit hypercube.
+if any( (U < 0) | (U > 1) )
+    error('Some quantiles are outside the unit hypercube.')
+end
+
+% Loop on each family to compute individual weight.
+for i=1:length(family)
+
+    % Constrain the boundaries to the domain covered by each family.
+    bounds_tau = constrain_tau(family{i}, boundaries)
+
+    % Translate the boundaries on tau in copula parameters.
+    [alpha_min, alpha_max] = copulaparam(family{i}, bounds_tau)
+
+    % Integrate the likelihood over the parameter range.
+    p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-3, [0,128], U, family{i})
+    
+    % Prior for the copula family
+    p(i) = p(i)/diff(bounds_tau)
+    
 end
