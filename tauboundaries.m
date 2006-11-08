@@ -1,6 +1,6 @@
-function [tau_min,tau_max] = tauboundaries(type);
+function bounds = tauboundaries(type);
 %
-% Function [tau_min, tau_max] = tauboundaries(type)
+% Function bounds = tauboundaries(type)
 %
 % Return the minimum and maximum Kendall's tau spanned by a given copula family.
 % 
@@ -27,7 +27,11 @@ switch lower(type)
         tau_max = 2/9;    
 
     case 'frank'
-
+        tau_min(1) = -1
+        tau_min(2) = eps
+        tau_max(1) -eps
+        tau_max(2) = 1
+        
     case 'gaussian'
 
     case 'gumbel'
