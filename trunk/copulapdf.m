@@ -1,12 +1,16 @@
 function c = copulapdf(family, U, alpha)
 %
 %   FUNCTION C = COPULAPDF(FAMILY, U, ALPHA)
-%   Return the density of the copula.
+%
+%   Return c(u,v|ALPHA), the copula density. 
 %
 %   INPUTS
 %       FAMILY: one of {'ind', 'gaussian', 'gumbel' 'clayton' 'sim' 'frank' 'gb' 'amh' 'joe'}       
 %       U: Nx2 vector (u,v) in [0,1]^2.
-%       ALPHA: 1xM vector of copula alphaameter.
+%       ALPHA: 1xM vector of copula parameters
+%           or 
+%       U: 1x2 vector (u,v) in [0,1]^2.
+%       ALPHA: NxM vector of copula parameters. 
 %
 %   OUTPUTS
 %       C: NxM matrix of C(u,v|ALPHA) 
@@ -18,7 +22,7 @@ function c = copulapdf(family, U, alpha)
 % Check alpha is in the domain covered by the family.
 pass = check_alpha(family, alpha);
 if ~all(pass)
-    error('Some alphaameters are not included in the domain.\n%f', alpha(~pass))
+    error('Some parameters are not valid.\n%f', alpha(~pass))
 end
 
 % Check u,v are in [0,1]^2
@@ -26,24 +30,31 @@ if any( (U < 0) | (U > 1) )
     error('Some quantiles are outside the unit hypercube.')
 end
 
-sU = size(U);
-sA = size(alpha);
+% Shape checking
+[NU, MU] = size(U);
+[NA, MA] = size(alpha);
 
-N = sU(1);
-M = sA(2);
-L = sA(1);
-
-if L > 1 && L ~= N
-    error('Number of alphaameters must be 1, identical to number of couples in U, or a row vector.')
+if MU ~= 2
+    error('Bad shape. U is not Nx2, but rather %s.', mat2str(size(U)))
 end
 
-% Shape vectors into matrices to compute the pdf for all values of (u,v)
-% and all alphaameters without loops.
+% Reshape ALPHA
+if NA == 1 
+    alpha = repmat(alpha, NU, 1);
+elseif NA ~= NU && NU ~= 1
+    error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
+end
+
+% Reshape u,v
 u = U(:,1);
 v = U(:,2);
-u = repmat(u, 1, M);
-v = repmat(v, 1, M);
-alpha = repmat(alpha, N, 1);
+if NU == 1
+    u = repmat(u, NA, MA);
+    v = repmat(v, NA, MA);
+else
+    u = repmat(u, 1, MA);
+    v = repmat(v, 1, MA);
+end
 
 switch lower(family)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ellipitical copulas %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,7 +90,7 @@ switch lower(family)
         a = exp(-alpha)-1;
         v1 = exp(-alpha.*(u));
         v2 = exp(-alpha.*(v));
-        nz = (((a + (v1-1).*(v2-1)).^2)~=0)&nz;
+        %        nz = (((a + (v1-1).*(v2-1)).^2)~=0);
         v1 = exp(-alpha.*(u));
         v2 = exp(-alpha.*(v));
         a = exp(-alpha)-1;
@@ -137,7 +148,7 @@ switch lower(family)
         v2 = (-1 + v.^(-1./alpha)).^alpha;
         c = v1.*v2.*((v1+v2).^(-2+1./alpha)).*(1+(v1+v2).^(1./alpha)).^(-2-alpha).*(-1+alpha+2.*alpha.*...
             ((v1+v2).^(1./alpha)))./(alpha.*u.*v.*(-1+u.^(1./alpha)).*(-1+v.^(1./alpha)));
-              
+        
     case 'fgm'
         % the Farlie-Gumbel-Morgenstern Copula
         % = ...
@@ -167,5 +178,6 @@ switch lower(family)
         %             g1 = generateurarchderivee(copula(u ,v ,type,alpha),type,alpha);
         %             c = -g2.*gu.*gv./((g1.^3)+(g1.^3==0));
         
-        
+    otherwise
+        error('Copula family ''%s'' not recognized', family)
 end

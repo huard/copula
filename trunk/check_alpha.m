@@ -30,7 +30,7 @@ switch lower(family)
         pass = alpha >=-1 & alpha < 1; 
         
     case 'frank'
-        pass = alpha ~= 0
+        pass = alpha ~= 0;
         
     case 'gb'
         pass = alpha >=0 & alpha <=1;
@@ -38,32 +38,35 @@ switch lower(family)
     case {'arch12' 'arch14'}
         pass = alpha >= 1;
     
+    case 'ind'
+        pass = ones(size(alpha));
+        
     otherwise
         error('Copula family ''%s'' not recognized', family)
 end
 
 if any(~pass) 
-    wrong = mat2str(alpha(~pass))
+    wrong = mat2str(alpha(~pass));
     switch lower(family)
         case {'gaussian' 't' 'fgm'}      
-            warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] for the %s copula.\n ', family);
+            warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] for the %s copula.\nBad parameters: %s ', family, wrong);
             
         case 'clayton'
-            warning('COPULA:BadParameter', 'ALPHA must be nonnegative for the Clayton copula.');
+            warning('COPULA:BadParameter', 'ALPHA must be nonnegative for the Clayton copula.\nBad parameters: %s', wrong);
             
         case {'gumbel' 'joe'}
-            warning('COPULA:BadParameter', 'ALPHA must be greater than or equal to 1 for the %s copula.', family);
+            warning('COPULA:BadParameter', 'ALPHA must be greater than or equal to 1 for the %s copula.\nBad parameters: %s', family, wrong);
             
         case 'amh'
-            warning('COPULA:BadParameter', 'ALPHA must be in [-1,1[ for the Ali-Mikhail-Haq copula.');
+            warning('COPULA:BadParameter', 'ALPHA must be in [-1,1[ for the Ali-Mikhail-Haq copula.\nBad parameters: %s', wrong);
             
         case 'frank'
-            warning('COPULA:BadParameter', 'ALPHA must not be equal to 0 for Frank copula.');
+            warning('COPULA:BadParameter', 'ALPHA must not be equal to 0 for Frank copula.\nBad parameters: %s', wrong);
             
         case 'gb'
-            warning('COPULA:BadParameter', 'ALPHA must be in [0,1] for the Gumbel-Barnett copula.');
+            warning('COPULA:BadParameter', 'ALPHA must be in [0,1] for the Gumbel-Barnett copula.\nBad parameters: %s', wrong);
             
         case {'arch12' 'arch14'}
-            warning('COPULA:BadParameter', 'ALPHA must be greater than or equal to 1 for the %s copula.', family);
+            warning('COPULA:BadParameter', 'ALPHA must be greater than or equal to 1 for the %s copula.\nBad parameters: %s', family, wrong);
     end
 end
