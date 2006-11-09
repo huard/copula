@@ -42,17 +42,20 @@ switch lower(family)
     case 'clayton'
         alpha = 2*tau ./ (1-tau);
                 
-            case 'frank'
-                nn = (tau == 0) ;
-                alpha(nn) = 0;
-                if abs(tau) < 1
+    case 'frank'
+for i=1:length(tau)
+if tau(i) == 0
+alpha(i) = 0
+elseif abs(tau) == 1
+alpha(i) = sign(tau(i)).*Inf;
+else
                     % There's no closed form for alpha in terms of tau, so alpha has to be
                     % determined numerically.
                     warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                    alpha = fzero(@ArchRootFun,sign(tau(~nn)),[],tau);
+                    alpha = fzero(@ArchRootFun,sign(tau(i)),[],'frank', tau(i));
                     warning(warn);
                 else
-                    alpha(~nn) = sign(tau(~nn)).*Inf;
+
                 end
                 
             case 'fgm'
@@ -67,7 +70,7 @@ switch lower(family)
                 % There's no closed form for alpha in terms of tau, so alpha has to be
                 % determined numerically.
                 warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                alpha(~nn) = fzero(@archRootFun,[-1 0.99999999],[],'amh',tau(~nn));
+                alpha(~nn) = fzero(@ArchRootFun,[-1 0.99999999],[],'amh',tau(~nn));
                 warning(warn);
                 
             case {'gb'}
@@ -76,7 +79,7 @@ switch lower(family)
                 % There's no closed form for alpha in terms of tau, so alpha has to be
                 % determined numerically.
                 warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                alpha(~nn) = fzero(@archRootFun,[0 1],[],'gb',tau(~nn));
+                alpha(~nn) = fzero(@ArchRootFun,[0 1],[],'gb',tau(~nn));
                 warning(warn);
                 
             case {'joe'}
@@ -85,7 +88,7 @@ switch lower(family)
                 % There's no closed form for alpha in terms of tau, so alpha has to be
                 % determined numerically.
                 warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                alpha(~nn) = fzero(@archRootFun,[1 99],[],'joe',tau(~nn));
+                alpha(~nn) = fzero(@ArchRootFun,[1 99],[],'joe',tau(~nn));
                 % limited to 99 for computation limit. alpha = 99
                 % corresponds to tau = 0.9895
                 warning(warn);
