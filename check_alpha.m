@@ -36,7 +36,7 @@ switch lower(family)
 end
 
 if any(~boolean) 
-    wrong = mat2str(alpha(~boolean));
+    wrong = num2str(alpha(~boolean));
     switch lower(family)
         case {'gaussian' 't' 'fgm'}      
             warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] for the %s copula.\nBad parameters: %s ', family, wrong);

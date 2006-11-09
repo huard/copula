@@ -6,7 +6,7 @@ function boolean = check_tau(family, tau)
 %
 %   INPUT
 %       FAMILY: One of {'amh' 'arch12' 'arch14' 'clayton' 'frank'
-%               'gaussian' 't' 'fgm' 'gumbel'}
+%               'gaussian' 't' 'fgm' 'gumbel' 'joe'}
 %       TAU:    Array of Kendall's tau. 
 %          
 %   OUTPUT
@@ -35,7 +35,7 @@ switch lower(family)
     case 'gumbel'
         boolean = (tau >= 0);
     case 'amh'
-        boolean = (tau >= -0.181726)*(tau <= 1/3);
+        boolean = (tau >= -0.181726) & (tau <= 1/3);
     case 'joe'
         boolean = (tau > 0);
     case {'arch12' 'arch14'}
@@ -46,8 +46,8 @@ end
 
 boolean = boolean & base;
 
-if any(~boolean) && (warn ~= 0)
-    wrong = mat2str(tau(~boolean));
+if any(~boolean) 
+    wrong = num2str(tau(~boolean));
     switch lower(family)
         case {'gaussian' 't' 'plackett'}      
             warning('COPULA:BadParameter', 'TAU must be in [-1, 1] for the %s copula.\nBad parameters: %s', family, wrong);
@@ -56,7 +56,7 @@ if any(~boolean) && (warn ~= 0)
             warning('COPULA:BadParameter', 'TAU must be in ]0,1] for Clayton copula.\nBad parameters: %s',wrong);
             
         case 'frank'
-            warning('COPULA:BadParameter', 'TAU must be in [-1,1]\{0} for Frank copula.\nBad parameters: %s',wrong);
+            warning('COPULA:BadParameter', 'TAU must be in [-1,1]\0 for Frank copula.\nBad parameters: %s',wrong);
 
         case {'fgm'}      
             warning('COPULA:BadParameter', 'TAU must be in [-2/9, 2/9] for FGM copula.\nBad parameters: %s',wrong);
@@ -68,8 +68,10 @@ if any(~boolean) && (warn ~= 0)
             warning('COPULA:BadParameter', 'TAU must be in [0,1] for Gumbel copula.\nBad parameters: %s',wrong);
             
         case 'amh'
-            warning('COPULA:BadParameter', 'TAU must be in [-0.181726, 1/3] for Ali-Mikhail-Haq copula.\nBad parameters: %s',wrong);
-                    case 'joe'
+            warning('COPULA:BadParameter', ...
+	    'TAU must be in [-0.181726, 1/3] for Ali-Mikhail-Haq copula.\nBad parameters: %s',wrong);
+        
+	case 'joe'
             warning('COPULA:BadParameter', 'TAU must be in ]0, 1] for Ali-Mikhail-Haq copula.\nBad parameters: %s',wrong);
 
         case {'arch12' 'arch14'}
