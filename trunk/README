@@ -9,9 +9,19 @@ By looking at this function, it is possible to understand what the code does. Lo
 Functions description
 --------------------
 
-tauboundaries: Return the domain spanned by Kendall's tau.
-restrict_tau: Constrain bounds in tau to the domain convered by the copula.  
+bcs: Return the weight of each copula family, given the data.
+check_alpha: Return a boolean indicating the validity of the copula parameter.
+check_tau: Return a boolean indicating the validity of Kendall's tau for a given copula.
+constrain_tau: Constrain bounds in tau to the domain convered by the copula.  
+copulacdf: Return the cumulative distribution function of the copula.
+copula_like: Return the likelihood of data set.
+copulaparam: Find copula parameter given Kendall's tau.
+copulapdf: Return the probability distribution function of the copula.
 copulastat: Kendall's rank correlation for a copula.
+lambdaarch: 
+tauboundaries: Return the domain spanned by Kendall's tau.
+taujacobian: Return the derivative of tau(alpha) with respect to alpha.
+
 
 
 
