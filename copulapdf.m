@@ -60,8 +60,12 @@ switch lower(family)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ellipitical copulas %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     case 'gaussian'
-        v1 = norminv(u);
-        v2 = norminv(v);
+        %v1 = norminv(u);
+        %v2 = norminv(v);
+	% Octave ----
+        v1 = normal_inv(u);
+        v2 = normal_inv(v);
+	% -----------
         c = (1./sqrt(1-alpha.^2)).*exp(-(v1.^2+v2.^2-(2.*alpha).*v1.*v2)./(2*(1-alpha.^2)) + (v1.^2+v2.^2)./2);
         
         

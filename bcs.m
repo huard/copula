@@ -25,13 +25,13 @@ function p = bcs(family, U, boundaries, prior_tau)
 
 % Set defaults
 if nargin <= 3
-    prior_tau = inline('1')
+    prior_tau = inline('1');
 else
     printf('Sorry, this feature is not implemented.')
 end
 
 if nargin <= 2
-    boundaries = [-.95, .95]
+    boundaries = [-.95, .95];
 end
 
 % Make sure U is in the unit hypercube.
@@ -43,7 +43,7 @@ end
 for i=1:length(family)
 
     % Constrain the boundaries to the domain covered by each family.
-    bounds_tau = constrain_tau(family{i}, boundaries)
+    bounds_tau = constrain_tau(family{i}, boundaries);
 
     % Translate the boundaries on tau in copula parameters.
     bounds_alpha = copulaparam(family{i}, bounds_tau)

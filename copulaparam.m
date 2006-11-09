@@ -30,7 +30,7 @@ if nargin < 2
     error('Requires two input arguments.');
 end
 
-pass = check_tau(family, tau)
+pass = check_tau(family, tau);
 if any(~pass)
     error('Bad parameters')
 end
@@ -49,7 +49,7 @@ switch lower(family)
                     % There's no closed form for alpha in terms of tau, so alpha has to be
                     % determined numerically.
                     warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                    alpha = fzero(@frankRootFun,sign(tau(~nn)),[],tau);
+                    alpha = fzero(@ArchRootFun,sign(tau(~nn)),[],tau);
                     warning(warn);
                 else
                     alpha(~nn) = sign(tau(~nn)).*Inf;
