@@ -24,7 +24,7 @@ switch lower(family)
     
     case 'amh'
         tau_min = -0.181726;
-        tau_max = 1/3
+        tau_max = 1/3;
         
     case {'arch12' 'arch14'}
         tau_min = 1/3;
@@ -38,13 +38,13 @@ switch lower(family)
         
     case 'frank'
         % Discontinuity at 0
-        tau_min = -1
-        tau_max = 1
+        tau_min = -1;
+        tau_max = 1;
         
     case {'gaussian' 't'}
         
     case 'gumbel'
-        tau_min = 0.
+        tau_min = 0.;
         
     otherwise 
         error('Copula family ''%s'' not recognized.', family)

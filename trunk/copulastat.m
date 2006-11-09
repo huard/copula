@@ -25,14 +25,14 @@ function tau = copulastat(family,alpha)
 %   Modified by D. Huard, Nov. 2006.
 %   Requires MATLAB R13.
 
-if nargin < 2
+if nargin ~= 2
     error('Requires two input arguments.');
 end
 
 pass = check_alpha(family, alpha);
 
 if any(~pass)
-    error('Invalid parameters')
+    error('Invalid parameters.')
 end
 
 tau = zeros(size(alpha));
@@ -45,23 +45,34 @@ switch lower(family)
         tau = alpha ./ (2 + alpha);
         
     case 'frank'
-        i = alpha ~= 0
+        i = alpha ~= 0;
         tau(i) = 1 + 4 .* (debye1(alpha(i))-1) ./ alpha(i);
         
     case 'gumbel'
         tau = 1 - 1./alpha;
         
     case 'amh'
-	function y = lambda(x), y = lambdaArch(x, alpha, 'amh');endfunction
-        tau = 1 + 4 .* quad(@lambda,0,1,[],[]);
+for i=1:length(alpha)
+        tau(i) = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],'amh', alpha(i));
+end
         
     case 'gb'
-        i = alpha ~= 0
-        tau(i) = 1 + 4 .* quad(@lambdaArch,0,1,[],[],alpha(i),'gb');
+        for i=1:length(alpha)
+	if alpha(i) ~= 0;
+	tau = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],'gb', alpha(i));
+end
+end
+	%tau(i) = 1 + 4 .* quad(@(x)lambdaarch('gb', x, alpha(i)),0,1);
         
     case 'joe'
-        i = alpha ~= 1
-        tau(i) = 1 + 4 .* quad(@lambdaArch,0,1,[],[],alpha(i),'joe');
+        i = alpha ~= 1;
+     for i=1:length(alpha)
+	if alpha ~= 1;;
+	tau = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],'joe', alpha(i));
+end
+end
+
+%	tau(i) = 1 + 4 .* quad(@(x)lambdaarch('joe', x, alpha(i)),0,1);
 
     case 'fgm'    
         tau = (2/9).*alpha;

@@ -1,6 +1,6 @@
-function u = lambdaarch(family, t, alpha)
+function u = lambdaarch(t, family, alpha)
 %
-%    FUNCTION U = LAMBDAARCH(FAMILY, t, ALPHA)
+%    FUNCTION U = LAMBDAARCH(T, FAMILY, ALPHA)
 %
 %    Function used in the paper of Genest [1993], in order to compare
 %    differents copulas, lambda(t) = g(t)/g'(t) where g is the generator
@@ -19,13 +19,15 @@ function u = lambdaarch(family, t, alpha)
 
 if strcmp(lower(family), 'ind')
     if nargin ~= 2
-        error('Function takes two arguments.')    end
+        error('Function takes two arguments.')
+   end
 else
     if nargin ~=3
-        error('Function takes three arguments.')    end
+        error('Function takes three arguments.')
+    end
 end
 
-pass = check_alpha(family, alpha)
+pass = check_alpha(family, alpha);
 if any(~pass)
     error('Bad parameters: %s', num2str(alpha(~pass)))
 end
@@ -35,7 +37,7 @@ denominator = archemedeangeneratorderivative(family, t, alpha);
 nonzero = (denominator ~= 0);
 zero = (denominator == 0);
 
-u(nonzero) = archemedeangenerator(family, t(nonzero), alpha) ./ denominator(nonzero)
+u(nonzero) = archemedeangenerator(family, t(nonzero), alpha) ./ denominator(nonzero);
 
 u(zero) = sign(archemedeangenerator(family, t(zero), alpha)).*realmax;
 
@@ -63,7 +65,7 @@ function y = archemedeangenerator(family, x, alpha)
 % Generator may tend to infinity at 0
 y = ones(size(x)).*realmax; 
 nonzero = (x ~= 0);
-    
+
 switch lower(family)
     
     case 'ind' % independent
@@ -122,7 +124,7 @@ switch lower(family)
         y(nonzero) = 1./((x(nonzero).^2));
         
     case 'amh' % Ali, Mikhail and Haq 1978
-           y(nonzero) = (-alpha^2)./((1-alpha.*(1-x(nonzero))).^2)+1./(x(nonzero).^2);
+           y(nonzero) = (-alpha.^2)./((1-alpha.*(1-x(nonzero))).^2) + 1./(x(nonzero).^2);
         
     case 'gb' %Gumbel 1960, Barnett 1980
         f = 1 - alpha.*log(x(nonzero));
