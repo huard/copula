@@ -46,7 +46,9 @@ for i=1:length(family)
     bounds_tau = constrain_tau(family{i}, boundaries)
 
     % Translate the boundaries on tau in copula parameters.
-    alpha_min, alpha_max = copulaparam(family{i}, bounds_tau)
+    bounds_alpha = copulaparam(family{i}, bounds_tau)
+    alpha_min = bounds_alpha(1)
+    alpha_max = bounds_alpha(2)
 
     % Integrate the likelihood over the parameter range.
     p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-3, [0,128], U, family{i})

@@ -51,16 +51,17 @@ switch lower(family)
     case 'gumbel'
         tau = 1 - 1./alpha;
         
-    case 'amh'    
-        tau = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],alpha,'amh');
+    case 'amh'
+	function y = lambda(x), y = lambdaArch(x, alpha, 'amh');endfunction
+        tau = 1 + 4 .* quad(@lambda,0,1,[],[]);
         
     case 'gb'
         i = alpha ~= 0
-        tau(i) = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],alpha(i),'gb');
+        tau(i) = 1 + 4 .* quad(@lambdaArch,0,1,[],[],alpha(i),'gb');
         
     case 'joe'
         i = alpha ~= 1
-        tau(i) = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],alpha(i),'joe');
+        tau(i) = 1 + 4 .* quad(@lambdaArch,0,1,[],[],alpha(i),'joe');
 
     case 'fgm'    
         tau = (2/9).*alpha;
@@ -72,6 +73,5 @@ switch lower(family)
         tau = 1-2./(1+2.*alpha);
 
     otherwise
-        error('Unrecognized copula type: ''%s''',type);
+        error('Unrecognized copula family: ''%s''',family);
 end
-
