@@ -75,5 +75,6 @@ switch lower(family)
     case 'joe' % Joe, 1997
         c = 1 - (((1-u).^alpha)+((1-v).^alpha)-((1-u).^alpha).*((1-v).^alpha)).^(1./alpha);
         
-
+    otherwise
+        error('Copula family ''%s'' not recognized.', family)
 end

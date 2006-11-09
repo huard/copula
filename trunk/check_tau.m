@@ -1,6 +1,6 @@
-function pass = check_tau(family, tau, warn)
+function boolean = check_tau(family, tau)
 %
-%   FUNCTION PASS = CHECK_TAU(FAMILY, TAU [, WARN])
+%   FUNCTION BOOLEAN = CHECK_TAU(FAMILY, TAU)
 %
 %   Check TAU is a valid Kendall's rank correlation for the copula family.
 %
@@ -8,71 +8,72 @@ function pass = check_tau(family, tau, warn)
 %       FAMILY: One of {'amh' 'arch12' 'arch14' 'clayton' 'frank'
 %               'gaussian' 't' 'fgm' 'gumbel'}
 %       TAU:    Array of Kendall's tau. 
-%       WARN:   If 1, display a message whenever some TAUs are not valid.
-%               If 0, no message is printed. 
-%   
+%          
 %   OUTPUT
-%       PASS: Boolean array. True if tau is in the domain, False otherwise.
+%       BOOLEAN: Boolean array. True if tau is in the domain, False otherwise.
 %       
 
-% D. Huard, Nov. 2006
+%   G. Evin, D. Huard, Nov. 2006
 
 %alpha = copulaparam(family, tau)
 %pass = check_alpha(alpha)
-
-if nargin <= 2
-    warn = 1;
-end
 
 base = (tau >= -1) & (tau <=1);
 
 switch lower(family)
     
-    case 'amh'
-        pass = (tau > -0.181726) & (tau < 1/3);
-        
-    case {'arch12' 'arch14'}
-        pass = tau >= 1/3;
-        
+    case {'gaussian' 't' 'plackett'}
+        boolean = ones(size(tau));
     case 'clayton'
-        pass = tau > 0;
-        
+        boolean = (tau > 0);
     case 'frank'
-        pass = tau ~= 0;
-        
-    case {'gaussian' 't' 'fgm'}
-        pass = (tau >= -1) & (tau <=1); 
-           
+        boolean = (tau ~= 0);
+    case 'fgm'
+        boolean = (abs(tau) <= 2/9);
+    case 'gb'
+        boolean = (tau <= 0);
     case 'gumbel'
-        pass = tau >= 0;
-        
+        boolean = (tau >= 0);
+    case 'amh'
+        boolean = (tau >= -0.181726)*(tau <= 1/3);
+    case 'joe'
+        boolean = (tau > 0);
+    case {'arch12' 'arch14'}
+        boolean = (tau >= 1/3);
     otherwise
         error('Copula family ''%s'' not recognized.', family)
 end
 
-pass = pass & base;
+boolean = boolean & base;
 
-if any(~pass) && (warn ~= 0)
+if any(~boolean) && (warn ~= 0)
+    wrong = mat2str(tau(~boolean));
     switch lower(family)
-        case {'gaussian' 't' 'fgm'}      
-            fprintf('TAU must be in [-1, 1] for the %s copula.', family);
+        case {'gaussian' 't' 'plackett'}      
+            warning('COPULA:BadParameter', 'TAU must be in [-1, 1] for the %s copula.\nBad parameters: %s', family, wrong);
             
         case 'clayton'
-            fprintf('TAU must be nonnegative for Clayton copula.');
-            
-        case {'gumbel'}
-            fprintf('TAU must be greater than or equal to 1 for %s copula.', family);
-            
-        case 'amh'
-            fprintf('TAU must be in [-0.181726, 1/3[ for the Ali-Mikhail-Haq copula.');
+            warning('COPULA:BadParameter', 'TAU must be in ]0,1] for Clayton copula.\nBad parameters: %s',wrong);
             
         case 'frank'
-            fprintf('TAU must not be equal to 0 for Frank copula.');
-                      
+            warning('COPULA:BadParameter', 'TAU must be in [-1,1]\{0} for Frank copula.\nBad parameters: %s',wrong);
+
+        case {'fgm'}      
+            warning('COPULA:BadParameter', 'TAU must be in [-2/9, 2/9] for FGM copula.\nBad parameters: %s',wrong);
+
+        case {'gb'}      
+            warning('COPULA:BadParameter', 'TAU must be in [-1,0] for Gumbel-Barnett copula.\nBad parameters: %s',wrong);
+
+        case {'gumbel'}
+            warning('COPULA:BadParameter', 'TAU must be in [0,1] for Gumbel copula.\nBad parameters: %s',wrong);
+            
+        case 'amh'
+            warning('COPULA:BadParameter', 'TAU must be in [-0.181726, 1/3] for Ali-Mikhail-Haq copula.\nBad parameters: %s',wrong);
+                    case 'joe'
+            warning('COPULA:BadParameter', 'TAU must be in ]0, 1] for Ali-Mikhail-Haq copula.\nBad parameters: %s',wrong);
+
         case {'arch12' 'arch14'}
-            fprintf('TAU must be greater than or equal to 1/3 for %s copula.', family);
+            warning('COPULA:BadParameter', 'TAU must be in [1/3,1] for %s copula.\nBad parameters: %s', family, wrong);
     end
-    fprintf('\nInvalid parameters:')
-    disp(tau(~pass))
 end
 

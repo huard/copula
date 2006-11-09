@@ -1,6 +1,6 @@
-function pass = check_alpha(family, alpha)
+function boolean = check_alpha(family, alpha)
 %
-%   FUNCTION PASS = CHECK_ALPHA(FAMILY, ALPHA [, WARN])
+%   FUNCTION BOOLEAN = CHECK_ALPHA(FAMILY, ALPHA [, WARN])
 %   
 %   Check ALPHA is a valid parameter for the copula family.
 %
@@ -10,7 +10,7 @@ function pass = check_alpha(family, alpha)
 %       ALPHA:    Array of copula parameters. 
 %   
 %   OUTPUT
-%       PASS: Boolean array. True if tau is in the domain, False otherwise.
+%       BOOLEAN: Boolean array. True if tau is in the domain, False otherwise.
 %       
 
 % D. Huard, Nov. 2006
@@ -18,35 +18,25 @@ function pass = check_alpha(family, alpha)
 switch lower(family)
     
     case {'gaussian' 't' 'fgm'}
-        pass = (alpha >= -1) & (alpha <=1); 
-        
+        boolean = abs(alpha)<=1;
     case 'clayton'
-        pass = alpha > 0;
-        
-    case {'gumbel' 'joe'}
-        pass = alpha >= 1;
-        
-    case 'amh'
-        pass = alpha >=-1 & alpha < 1; 
-        
+        boolean = (alpha >= 0);
     case 'frank'
-        pass = alpha ~= 0;
-        
+        boolean = (alpha ~= 0);
     case 'gb'
-        pass = alpha >=0 & alpha <=1;
-        
-    case {'arch12' 'arch14'}
-        pass = alpha >= 1;
-    
+        boolean = (alpha >= 0)&(alpha<=1);
+    case {'gumbel' 'joe' 'arch12' 'arch14'}
+        boolean = (alpha >= 1);
+    case 'amh'
+        boolean = (alpha >= -1)&(alpha<1);
     case 'ind'
-        pass = ones(size(alpha));
-        
+        boolean = ones(size(alpha));
     otherwise
         error('Copula family ''%s'' not recognized', family)
 end
 
-if any(~pass) 
-    wrong = mat2str(alpha(~pass));
+if any(~boolean) 
+    wrong = mat2str(alpha(~boolean));
     switch lower(family)
         case {'gaussian' 't' 'fgm'}      
             warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] for the %s copula.\nBad parameters: %s ', family, wrong);

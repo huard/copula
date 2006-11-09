@@ -50,3 +50,5 @@ switch lower(type)
         error('Copula family ''%s'' not recognized.', family)
         
 end
+
+bounds =  [tau_min, tau_max]
