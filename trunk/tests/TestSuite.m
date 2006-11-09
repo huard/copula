@@ -97,6 +97,27 @@ end
 fprintf('Passed !\n')
 
 % TEST COPULACDF
+% Values are compared with results obtained with Maple.
+
+%% Clayton
+pass = isnear([0.206897, 0.247226, 0.268499], copulacdf('clayton', [.3,.4], [1,2,3]), 1e-6)
+if any(~pass):
+    error('Error in Clayton copulacdf.')
+end
+
+%% Gumbel
+pass = isnear([.12, .22025, .256704, .297721], copulacdf('gumbel', [.3,.4], [1,2,3,10]), 1e-6)
+if any(~pass):
+    error('Error in Gumbel copulacdf.')
+end
+
+%% Frank
+pass = isnear([0.4539769530e-2, .1452283617, .1693783396, 0.1911490534], copulacdf('frank', [.3,.4], [-10, 1, 2,3]), 1e-9)
+if any(~pass):
+    error('Error in Frank copulacdf.')
+end
+
+
 
 % TEST COPULA_LIKE
 
