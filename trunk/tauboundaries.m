@@ -20,7 +20,7 @@ function bounds = tauboundaries(family);
 
 tau_min = -1;
 tau_max = 1;
-switch lower(type)    
+switch lower(family)    
     
     case 'amh'
         tau_min = -0.181726;
@@ -51,4 +51,4 @@ switch lower(type)
         
 end
 
-bounds =  [tau_min, tau_max]
+bounds =  [tau_min, tau_max];
