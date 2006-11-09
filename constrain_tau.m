@@ -19,7 +19,9 @@ function  newbounds = constrain_tau(family, bounds)
 
 % D. Huard, Nov. 2006
 
-	[tau1, tau2] = tauboundaries(family);
-	tau_min = max(bounds(1), tau1);
-	tau_max = min(bounds(2), tau2);
-	newbounds = [tau_min, tau_max];
+boundaries = tauboundaries(family);
+tau1 = boundaries(1);
+tau2 = boundaries(2);
+tau_min = max(bounds(1), tau1);
+tau_max = min(bounds(2), tau2);
+newbounds = [tau_min, tau_max];
