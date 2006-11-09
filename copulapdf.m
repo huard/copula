@@ -179,5 +179,5 @@ switch lower(family)
         %             c = -g2.*gu.*gv./((g1.^3)+(g1.^3==0));
         
     otherwise
-        error('Copula family ''%s'' not recognized', family)
+        error('Copula family ''%s'' not recognized.', family)
 end
