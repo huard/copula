@@ -73,7 +73,7 @@ if any(~isnear([0,.5, .8], copulastat('gumbel', [1,2,5]), 1e-6))
 end
 
 %% Frank
-if any(~isnear([0,.5, .8], copulastat('frank', [1,2,5]), 1e-6))
+if any(~isnear([], copulastat('frank', [1,2,5]), 1e-6))
     error('Bug in copulastat for Frank.')
 end
 
@@ -93,6 +93,17 @@ if any(~isnear([1/3, 2/3, 8/9], copulastat('arch12', [1,2,6]), 1e-6))
 end
 fprintf('Passed !\n')
 
+%% Arch14
+if any(~isnear([1/3, 1/2, 4/5], copulastat('arch14', [1, 1.5, 4.5]), 1e-6))
+    error('Bug in copulastat for Arch14.')
+end
+
+%% FGM
+if any(~isnear([2/9, 1/3, 1], copulastat('fgm', [1, 3/2, 9/2]), 1e-6))
+    error('Bug in copulastat for FGM.')
+end
+
+fprintf('Passed !\n')
 
 % TEST COPULAPARAM
 family = {'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH',  'FGM', 'Arch12', 'Arch14'};
@@ -178,8 +189,17 @@ if any(~pass)
     error('Error in Arch12 copulapdf.')
 end
                           
+%% Arch14
+pass = isnear([], copulapdf('arch14', [.3,.4], [1,5,12]), 1e-8);
+if any(~pass)
+    error('Error in Arch14 copulapdf.')
+end                   
                           
-                          
+%% FGM
+pass = isnear([], copulapdf('fgm', [.3,.4], [.1, .3, .9]), 1e-9);
+if any(~pass)
+    error('Error in FGM copulapdf.')
+end
 
 fprintf('Passed !\n')
 
@@ -211,9 +231,23 @@ if any(~pass)
     error('Error in AMH copulacdf.')
 end
 
+%% Arch12
+pass = isnear([1.230062734, 1.992107671, 0.2548015110], copulacdf('arch12', [.3,.4], [1,5,12]), 1e-8);
+if any(~pass)
+    error('Error in Arch12 copulacdf.')
+end
 
+%% Arch14
+pass = isnear([], copulacdf('arch14', [.3,.4], [1,5,12]), 1e-8);
+if any(~pass)
+    error('Error in Arch14 copulacdf.')
+end    
 
-
+%% FGM
+pass = isnear([], copulacdf('fgm', [.3,.4], [.1, .3, .9]), 1e-9);
+if any(~pass)
+    error('Error in FGM copulacdf.')
+end
 
 
 % TEST COPULA_LIKE
@@ -227,6 +261,17 @@ for i=1:length(families)
 end
 fprintf('Passed !\n')
 
+isnear([], taujacobian('clayton', []), 1e-6)
+isnear([], taujacobian('gumbel', []), 1e-6)
+isnear([], taujacobian('frank', []), 1e-6)
+isnear([], taujacobian('gaussian', []), 1e-6)
+isnear([], taujacobian('amh', []), 1e-6)
+isnear([], taujacobian('arch12', []), 1e-6)
+isnear([], taujacobian('arch14', []), 1e-6)
+isnear([], taujacobian('fgm', []), 1e-6)
+
 % TEST BCS
+run TEST_acf
+close
 
 
