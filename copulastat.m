@@ -5,8 +5,8 @@ function tau = copulastat(family,alpha)
 %   Returns Kendall's rank correlation TAU
 %
 %   INPUT
-%       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH', 'GB', 
-%               'Joe', 'FGM', 'Arch12', 'Arch14'.
+%       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't',
+%               'AMH', 'Joe', 'FGM', 'Arch12', 'Arch14'.
 %       ALPHA: Copula parameter.
 %   
 %   OUTPUT
@@ -45,44 +45,45 @@ switch lower(family)
         tau = alpha ./ (2 + alpha);
         
     case 'frank'
-        i = alpha ~= 0;
-        tau(i) = 1 + 4 .* (debye1(alpha(i))-1) ./ alpha(i);
+        tau = real(1 - (4*(1 - (-3*alpha.^2 - pi^2 + 6*alpha.*log(1 - exp(alpha)) + 6*dilog(exp(alpha)))./(6.*alpha)))./alpha);
         
     case 'gumbel'
         tau = 1 - 1./alpha;
         
     case 'amh'
-for i=1:length(alpha)
-        tau(i) = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],'amh', alpha(i));
-end
+        t0 = alpha.^2;
+        t1 = log(1-alpha);
+        t2 =  t0 .* t1;
+        t3 = 2*alpha .* t1;
+        tau = 1- 2/3 * (t2 - t3 + alpha + t1) ./ t0;
         
-    case 'gb'
-        for i=1:length(alpha)
-	if alpha(i) ~= 0;
-	tau = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],'gb', alpha(i));
-end
-end
-	%tau(i) = 1 + 4 .* quad(@(x)lambdaarch('gb', x, alpha(i)),0,1);
+%     case 'gb'
+%         for i=1:length(alpha)
+%             if alpha(i) ~= 0;
+%                 tau(i) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],'gb', alpha(i));
+%             end
+%         end
+        %tau(i) = 1 + 4 .* quad(@(x)lambdaarch('gb', x, alpha(i)),0,1);
         
     case 'joe'
         i = alpha ~= 1;
-     for i=1:length(alpha)
-	if alpha ~= 1;;
-	tau = 1 + 4 .* quadg(@lambdaarch,0,1,[],[],'joe', alpha(i));
-end
-end
-
-%	tau(i) = 1 + 4 .* quad(@(x)lambdaarch('joe', x, alpha(i)),0,1);
-
+        for i=1:length(alpha)
+            if alpha(i) ~= 1;
+                tau(i) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],'joe', alpha(i));
+            end
+        end
+        
+%        	tau(i) = 1 + 4 .* quad(@(x)lambdaarch('joe', x, alpha(i)),0,1);
+        
     case 'fgm'    
         tau = (2/9).*alpha;
-
+        
     case 'arch12'    
         tau = 1-(2/3)./alpha;
         
     case 'arch14'
         tau = 1-2./(1+2.*alpha);
-
+        
     otherwise
         error('Unrecognized copula family: ''%s''',family);
 end

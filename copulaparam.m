@@ -5,8 +5,8 @@ function alpha = copulaparam(family,tau)
 %   Returns copula parameter, given Kendall's rank correlation.
 %
 %   INPUT
-%       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH', 'GB', 
-%               'Joe', 'FGM', 'Arch12', 'Arch14'.
+%       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH', 
+%               'FGM', 'Arch12', 'Arch14'.
 %       TAU: Kendall's rank correlation.%       
 %   
 %   OUTPUT
@@ -25,7 +25,6 @@ function alpha = copulaparam(family,tau)
 %   This function is not supported by The MathWorks, Inc.
 %   Modified by G. Evin & D. Huard, 2006.
 
-
 if nargin < 2
     error('Requires two input arguments.');
 end
@@ -38,68 +37,93 @@ end
 switch lower(family)
     case {'gaussian' 't'}
         alpha = sin(tau.*pi./2);
-  
+        
     case 'clayton'
-        alpha = 2*tau ./ (1-tau);
-                
+        alpha = 2*tau ./ (1-tau+eps);
+        
     case 'frank'
-for i=1:length(tau)
-if tau(i) == 0
-alpha(i) = 0
-elseif abs(tau) == 1
-alpha(i) = sign(tau(i)).*Inf;
-else
-                    % There's no closed form for alpha in terms of tau, so alpha has to be
-                    % determined numerically.
-                    warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                    alpha = fzero(@ArchRootFun,sign(tau(i)),[],'frank', tau(i));
-                    warning(warn);
-                else
+        for i=1:length(tau)
+            if tau(i) == 0
+                alpha(i) = 0;
+            elseif abs(tau(i)) == 1
+                alpha(i) = sign(tau(i)).*realmax;
+            else
+                % There's no closed form for alpha in terms of tau, so alpha has to be
+                % determined numerically.
+                alpha(i) = fzero(@invcopulastat,sign(tau(i)),[],'frank', tau(i));
+                
+            end
+        end
+        
+    case 'fgm'
+        alpha = tau.*(9/2);
+        
+    case 'gumbel'
+        alpha = 1 ./ (1-tau);
+        
+    case {'amh'}
+        % There's no closed form for alpha in terms of tau, so alpha has to be
+        % determined numerically.
+        for i=1:length(tau)
+            if tau(i) == 0 
+                alpha(i) = 0 ;
+            else
+                alpha(i) = fzero(@invcopulastat,[-1 0.99999999],[],'amh',tau(i));
+            end
+        end
+        
+    case {'gb'}
+        % There's no closed form for alpha in terms of tau, so alpha has to be
+        % determined numerically.
+        for i=1:length(tau)
+            if tau(i) == 0 
+                alpha(i) = 0 
+            else
+                alpha(i) = fzero(@invcopulastat,[0 1],[],'gb',tau(i));
+            end
+        end
 
-                end
-                
-            case 'fgm'
-                alpha = tau.*(9/2);
-                
-            case 'gumbel'
-                alpha = 1 ./ (1-tau);
-                
-            case {'amh'}
-                nn = (tau == 0) ;
-                alpha(nn) = 0;
-                % There's no closed form for alpha in terms of tau, so alpha has to be
-                % determined numerically.
-                warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                alpha(~nn) = fzero(@ArchRootFun,[-1 0.99999999],[],'amh',tau(~nn));
-                warning(warn);
-                
-            case {'gb'}
-                nn = (tau == 0) ;
-                alpha(nn) = 0;
-                % There's no closed form for alpha in terms of tau, so alpha has to be
-                % determined numerically.
-                warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                alpha(~nn) = fzero(@ArchRootFun,[0 1],[],'gb',tau(~nn));
-                warning(warn);
-                
-            case {'joe'}
-                nn = (tau == 0) ;
-                alpha(nn) = 0;
-                % There's no closed form for alpha in terms of tau, so alpha has to be
-                % determined numerically.
-                warn = warning('off','MATLAB:fzero:UndeterminedSyntax');
-                alpha(~nn) = fzero(@ArchRootFun,[1 99],[],'joe',tau(~nn));
+    case {'joe'}
+        nn = (tau == 0) ;
+        alpha(nn) = 0;
+        % There's no closed form for alpha in terms of tau, so alpha has to be
+        % determined numerically.
+        for i=1:length(tau)
+            if tau(i) == 0 
+                alpha(i) = 0 
+            else
+                alpha(i) = fzero(@invcopulastat,[1 99],[],'joe',tau(i));
                 % limited to 99 for computation limit. alpha = 99
                 % corresponds to tau = 0.9895
-                warning(warn);
-                
-            case 'arch12'
-                    alpha = 2./(3.*(1-tau));
- 
-            case {'arch14'}
-                    alpha = 1./(1-tau)-1/2;
-
-            otherwise
-                error('Unrecognized copula family: ''%s''',family);
+            end
         end
+        
+    case 'arch12'
+        alpha = 2./(3.*(1-tau));
+        
+    case {'arch14'}
+        alpha = 1./(1-tau)-1/2;
+        
+    otherwise
+        error('Unrecognized copula family: ''%s''.',family);
 end
+
+
+function err = invcopulastat(alpha, family, target_tau)
+% Return difference between target_tau and tau computed from copulastat
+% with a guess for alpha.
+guess_tau = copulastat(family, alpha);
+err = guess_tau - target_tau;
+
+
+function err = invcopulastat2(alpha, family, target_tau)
+% Return difference between target_tau and tau computed from lambdaarch
+% with a guess for alpha.
+
+if abs(alpha) < realmin %???
+    tau = 0;
+else
+    tau = 1 + 4 .* quadg('lambdaarch',eps,1-eps,[],[],family,alpha);
+end
+[alpha, tau, tau-target_tau];
+err = tau - target_tau;

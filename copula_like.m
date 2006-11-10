@@ -1,4 +1,4 @@
-function p = copula_like(family, U, alpha)
+function p = copula_like(alpha, family, U)
 %
 %   P = COPULA_LIKE(FAMILY, U, ALPHA)
 %
@@ -18,19 +18,19 @@ function p = copula_like(family, U, alpha)
 %   G. Evin & D. Huard, 2006
 
 %   Compute density
-c = copulapdf(family, U, alpha)
+c = copulapdf(family, U, alpha);
 
 % Compute data likelihood
-likelihood = sum(log(c), 1)
+likelihood = sum(log(c), 1);
 
 % Compute prior on the parameter assuming an uniform prior on TAU.
-prior_alpha = log(taujacobian(family, alpha))
+prior_alpha = log(taujacobian(family, alpha));
 
 % Prior on Tau
 % Implement user-defined prior on tau.
-prior_tau = log(ones(alpha))
+prior_tau = log(ones(size(prior_alpha)));
 
 % Combine
-loglike = likelihood + prior_alpha + prior_tau
+loglike = likelihood + prior_alpha + prior_tau;
 
 p = exp(loglike);
