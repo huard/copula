@@ -60,11 +60,11 @@ switch lower(family)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ellipitical copulas %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     case 'gaussian'
-        %v1 = norminv(u);
-        %v2 = norminv(v);
+        v1 = norminv(u);
+        v2 = norminv(v);
 	% Octave ----
-        v1 = normal_inv(u);
-        v2 = normal_inv(v);
+        %v1 = normal_inv(u);
+        %v2 = normal_inv(v);
 	% -----------
         c = (1./sqrt(1-alpha.^2)).*exp(-(v1.^2+v2.^2-(2.*alpha).*v1.*v2)./(2*(1-alpha.^2)) + (v1.^2+v2.^2)./2);
         
@@ -84,22 +84,17 @@ switch lower(family)
         c = (v1.*v2.*C).*(logC.^((2-2.*alpha)./alpha)-(1-alpha).*(logC.^((1-2.*alpha)./alpha)));
         
     case 'clayton'
-        % the clayton copula : C(u,v) = u^(-alpha)+v^(-alpha)-1)^(-1/alpha)
+        % (u^(-a)+v^(-a)-1)^(-(1+2*a)/a)*v^(-a-1)*u^(-a-1)+(u^(-a)+v^(-a)-1)^(-(1+2*a)/a)*u^(-a-1)*v^(-a-1)*a 
         C1 = copulacdf('clayton',[u(:,1),v(:,1)], alpha(1,:));
         c= (u.^(-alpha-1)).*(v.^(-alpha-1)).*(alpha+1).*C1.^(1+2.*alpha);
         
     case 'frank'
         % the frank copula : C(u,v) = (-1/alpha)*(1 +
         % (exp(-alpha*u)-1)(exp(-alpha*v)-1)/(exp(-alpha)-1))
-        a = exp(-alpha)-1;
-        v1 = exp(-alpha.*(u));
-        v2 = exp(-alpha.*(v));
-        %        nz = (((a + (v1-1).*(v2-1)).^2)~=0);
-        v1 = exp(-alpha.*(u));
-        v2 = exp(-alpha.*(v));
-        a = exp(-alpha)-1;
-        c = -alpha.*v1.*v2.*(a./((a + (v1-1).*(v2-1)).^2));
         
+        c = alpha.* exp(alpha.*(1 + u + v)) .* (-1 + exp(alpha)) ./ (exp(alpha.*(u + v)) ...
+              - exp(alpha).*(-1 + exp(alpha.*u) + exp(alpha.*v))).^2;
+                
     case 'frank_genest'
         % The frank copula from Genest (1987))
         % The alphaameterization is different
@@ -146,6 +141,7 @@ switch lower(family)
             alpha .* t29 + t15 .* alpha .* t17 + 2 .* t22 .* t20 .* t14 .* alpha + t25 .* alpha .* ...
         t26) .* t6 ./ t5 .* t2 ./ t1 ./ t48 ./ t47 ./ (t20 + 2 .* t28 + t22) ;
         
+        
     case 'arch14'
         % the 14th archimedean copula in Nelsen.
         v1 = (-1 + u.^(-1./alpha)).^alpha;
@@ -161,7 +157,7 @@ switch lower(family)
         
     case 'amh'
         % the Ali-Mikhail-Haq Copula
-        % = ...
+        % = (1-2*a+a^2+a*u*v+a*v+a*u-a^2*v-a^2*u+a^2*u*v)/(-1+a-a*v-a*u+a*u*v)^3
         t2 = alpha .* u ;
         t3 = t2 .* v ;
         t4 = alpha.^2;

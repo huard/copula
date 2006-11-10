@@ -45,15 +45,21 @@ for i=1:length(family)
     % Constrain the boundaries to the domain covered by each family.
     bounds_tau = constrain_tau(family{i}, boundaries);
 
+    % If bounds_tau is contrained, shift the boundaries away from the limit
+    % of the domain, since many functions don't deal well with those.
+    shift = bounds_tau ~= boundaries;
+    correct = [1,-1];
+    bounds_tau(shift) = bounds_tau(shift) .* (1 + correct(shift).*sign(bounds_tau(shift))*.01);
+
     % Translate the boundaries on tau in copula parameters.
-    bounds_alpha = copulaparam(family{i}, bounds_tau)
-    alpha_min = bounds_alpha(1)
-    alpha_max = bounds_alpha(2)
+    bounds_alpha = copulaparam(family{i}, bounds_tau);
+    alpha_min = bounds_alpha(1);
+    alpha_max = bounds_alpha(2);
 
     % Integrate the likelihood over the parameter range.
-    p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-3, [0,128], U, family{i})
+    p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-3, [0,128], family{i}, U);
     
     % Prior for the copula family
-    p(i) = p(i)/diff(bounds_tau)
+    p(i) = p(i)/diff(bounds_tau);
     
 end

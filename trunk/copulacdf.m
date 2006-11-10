@@ -58,13 +58,14 @@ switch lower(family)
         c = exp(-(a1+a2).^a3);
         
     case 'clayton'
+        % C(u,v) = u^(-alpha)+v^(-alpha)-1)^(-1/alpha)
         c = (u.^(-alpha)+v.^(-alpha)-1).^(-1./alpha);
         
     case 'fgm' % Farlie, Gumbel, Morgenstern
         c = u.*v.*(1+alpha.*(1-u).*(v));
         
     case 'amh' % Ali, Mikhail, Haq
-        c = (u.*v)./(1-alpha.*(1-u).*(v));
+        c = (u.*v)./(1-alpha.*(1-u).*(1-v));
         
     case 'gb' % Gumbel & Barnett
         c = u.*v.*exp(-alpha.*log(u).*log(u));
