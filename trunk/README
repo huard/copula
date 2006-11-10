@@ -1,4 +1,4 @@
-The files in this directory are used to compute the probability of a copula model, given some set of empirical CDF. 
+﻿The files in this directory are used to compute the probability of a copula model, given some set of empirical CDF. 
 Currently, only a subset of bivariate copulas are supported, described in the paper:
 Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
 
@@ -35,3 +35,6 @@ I'm not officially maintaining the code, but I can help.
 
 David Huard
 November 6, 2006
+
+
+dfd
