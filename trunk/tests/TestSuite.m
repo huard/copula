@@ -327,7 +327,5 @@ end
 fprintf('Everything looks fine.\n')
 
 % TEST BCS
-run TEST_acf
-%close
-
+run example.m
 
