@@ -1,8 +1,16 @@
 % TEST SUITE FOR COPULA RELATED FUNCTIONS
-%
+% Some tests check that the functions return matrices of the correct shape.
+% Other functions check that the actual values are vaild, by comparing
+% results with those obtained using Maple. See file analytic.mws to see how
+% these computations were performed.
+
 % Modified by:
-%% D. Huard,  Nov. 8, 2006. Added TEST CHECK_TAU, TEST CHECK_ALPHA, TEST
-%% COPULASTA
+%% D. Huard,  Nov. 8, 2006. Added TEST CHECK_TAU, TEST CHECK_ALPHA
+%% D. Huard, Nov, 9, 2006. Added TEST COPULAPDF, TEST COPULACDF, COPULA
+%%  TEST COPULAPARAM, TEST COPULASTAT
+%%  Found bug in copulacdf('clayton')
+%% D. Huard, Nov, 12, 2006. Added TAUJACOBIAN
+%%  Found bug in copulacdf('fgm')
 
 warning('off');%, COPULA:BadParameter)
 
@@ -35,8 +43,7 @@ fprintf('Passed !\n')
 
 % TEST COPULASTAT
 fprintf('Test copulastat ... ')
-families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank'};
-% Missing joe and GB.
+families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank', 'GB', 'Joe'};
 alpha = linspace(-5,5,50);
 for i=1:length(families)
     pass = check_alpha(families{i}, alpha);
@@ -73,7 +80,7 @@ if any(~isnear([0,.5, .8], copulastat('gumbel', [1,2,5]), 1e-6))
 end
 
 %% Frank
-if any(~isnear([], copulastat('frank', [1,2,5]), 1e-6))
+if any(~isnear([-.6657773860, .1100185380, .2138945700, .4567009584], copulastat('frank', [-10, 1,2,5]), 1e-6))
     error('Bug in copulastat for Frank.')
 end
 
@@ -91,7 +98,6 @@ end
 if any(~isnear([1/3, 2/3, 8/9], copulastat('arch12', [1,2,6]), 1e-6))
     error('Bug in copulastat for Arch12.')
 end
-fprintf('Passed !\n')
 
 %% Arch14
 if any(~isnear([1/3, 1/2, 4/5], copulastat('arch14', [1, 1.5, 4.5]), 1e-6))
@@ -99,15 +105,15 @@ if any(~isnear([1/3, 1/2, 4/5], copulastat('arch14', [1, 1.5, 4.5]), 1e-6))
 end
 
 %% FGM
-if any(~isnear([2/9, 1/3, 1], copulastat('fgm', [1, 3/2, 9/2]), 1e-6))
+if any(~isnear([-2/9, 0, 2/27, 2/9], copulastat('fgm', [-1, 0, 1/3, 1]), 1e-6))
     error('Bug in copulastat for FGM.')
 end
-
-fprintf('Passed !\n')
+fprintf('Passed !')
+fprintf('  Test missing for Joe and GB. \n')
 
 % TEST COPULAPARAM
+fprintf('Test copulaparam ... ')
 family = {'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH',  'FGM', 'Arch12', 'Arch14'};
-% Missing joe and GB.
 tau = linspace(-.95,.95,10);
 for i=1:length(family)
     pass = check_tau(family{i}, tau);
@@ -119,6 +125,8 @@ for i=1:length(family)
             family{i}, num2str(tau_passed(~ok)), num2str(alpha(~ok)) )
     end
 end
+fprintf('Passed !\n')
+
 
 % TEST COPULAPDF
 fprintf('Test copulapdf ... ')
@@ -166,7 +174,7 @@ if any(~pass)
 end
 
 %% Frank
-pass = isnear([.4546784123, 1.050358851,1.123078973, 21.17453219], copulapdf('frank', [.3,.4], [-10, 1, 2,100]), 1e-9);
+pass = isnear([.4546784123, 1.050358851, 1.450640692, 0.4539580774e-2], copulapdf('frank', [.3,.4], [-10, 1, 5,100]), 1e-8);
 if any(~pass)
     error('Error in Frank copulapdf.')
 end
@@ -190,13 +198,13 @@ if any(~pass)
 end
                           
 %% Arch14
-pass = isnear([], copulapdf('arch14', [.3,.4], [1,5,12]), 1e-8);
+pass = isnear([1.230062733, 2.321761087, 1.061073261], copulapdf('arch14', [.3,.4], [1,5,12]), 1e-7);
 if any(~pass)
     error('Error in Arch14 copulapdf.')
 end                   
                           
 %% FGM
-pass = isnear([], copulapdf('fgm', [.3,.4], [.1, .3, .9]), 1e-9);
+pass = isnear([.928, 1.008, 1.024, 1.072], copulapdf('fgm', [.3,.4], [-.9, .1, .3, .9]), 1e-9);
 if any(~pass)
     error('Error in FGM copulapdf.')
 end
@@ -220,7 +228,7 @@ if any(~pass)
 end
 
 %% Frank
-pass = isnear([0.4539769530e-2, .1452283617, .1693783396, 0.1911490534], copulacdf('frank', [.3,.4], [-10, 1, 2,3]), 1e-9);
+pass = isnear([0.4539769530e-2, .1452283617, .2255806654, .2995464418], copulacdf('frank', [.3,.4], [-10, 1, 5, 40]), 1e-6);
 if any(~pass)
     error('Error in Frank copulacdf.')
 end
@@ -232,22 +240,24 @@ if any(~pass)
 end
 
 %% Arch12
-pass = isnear([1.230062734, 1.992107671, 0.2548015110], copulacdf('arch12', [.3,.4], [1,5,12]), 1e-8);
+pass = isnear([.2068965517, .2956430471, .2999130447], copulacdf('arch12', [.3,.4], [1,5,12]), 1e-8);
 if any(~pass)
     error('Error in Arch12 copulacdf.')
 end
 
 %% Arch14
-pass = isnear([], copulacdf('arch14', [.3,.4], [1,5,12]), 1e-8);
+pass = isnear([.2068965517, .2873095536, .2990807552], copulacdf('arch14', [.3,.4], [1,5,12]), 1e-7);
 if any(~pass)
     error('Error in Arch14 copulacdf.')
 end    
 
 %% FGM
-pass = isnear([], copulacdf('fgm', [.3,.4], [.1, .3, .9]), 1e-9);
+pass = isnear([.07464, .12504,.13512, .16536], copulacdf('fgm', [.3,.4], [-.9, .1, .3, .9]), 1e-8);
 if any(~pass)
     error('Error in FGM copulacdf.')
 end
+
+fprintf('Passed !\n')
 
 
 % TEST COPULA_LIKE
@@ -259,19 +269,65 @@ for i=1:length(families)
     pass = check_alpha(families{i}, alpha);
     j = taujacobian(families{i}, alpha(pass));
 end
+
+
+if any(~isnear([1/2, 2/9, 1/8], taujacobian('clayton', [0, 1, 2]), 1e-8))
+    error('Bug in taujacobian for Clayton.')
+end
+
+if any(~isnear([1,1/4, 1/9], taujacobian('gumbel', [1,2,3]), 1e-8))
+    error('Bug in taujacobian for Gumbel.')
+end
+
+if any(~isnear([0.2686268354e-1, .1078697551, 0.6274654072e-1, 0.3868405077e-3], taujacobian('frank', [-10,1,5,100]), 1e-9))
+    error('Bug in taujacobian for Frank.')
+end
+
+if any(~isnear([2.010075630/pi, 2.309401076/pi, 4.588314676/pi], taujacobian('gaussian', [-.1, .5, .9]), 1e-6))
+    error('Bug in taujacobian for Gaussian.')
+end
+
+if any(~isnear([2-8/3*log(2), .3032150400, .4842094029], taujacobian('amh', [-1, .5, .9]), 1e-6))
+    error('Bug in taujacobian for AMH.')
+end
+
+if any(~isnear([2/3, 1/6, 2/27], taujacobian('arch12', [1,2,3]), 1e-6))
+    error('Bug in taujacobian for Arch12.')
+end
+
+if any(~isnear([4/9, 4/25, 4/49], taujacobian('arch14', [1,2,3]), 1e-6))
+    error('Bug in taujacobian for Arch14.')
+end
+
+if any(~isnear([2/9,2/9,2/9,2/9], taujacobian('fgm', [-1,0,.5,1]), 1e-6))
+    error('Bug in taujacobian for FGM.')
+end
 fprintf('Passed !\n')
 
-isnear([], taujacobian('clayton', []), 1e-6)
-isnear([], taujacobian('gumbel', []), 1e-6)
-isnear([], taujacobian('frank', []), 1e-6)
-isnear([], taujacobian('gaussian', []), 1e-6)
-isnear([], taujacobian('amh', []), 1e-6)
-isnear([], taujacobian('arch12', []), 1e-6)
-isnear([], taujacobian('arch14', []), 1e-6)
-isnear([], taujacobian('fgm', []), 1e-6)
+% TEST LAMBDAARCH
+family = {'Clayton', 'Frank', 'Gumbel', 'AMH', 'Joe', 'GB'};
+alpha = linspace(-5,5,10);
+for i=1:length(family)
+    pass = check_alpha(family{i}, alpha);
+    alpha_passed = alpha(pass);
+    taus1 = copulastat(family{i}, alpha_passed);
+    taus2 = zeros(size(taus1));
+    for j=1:length(taus1)
+        try
+            taus2(j) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],family{i}, alpha_passed(j));
+        catch
+            family{i}
+        end
+    end
+    if any(~isnear(taus1, taus2, 1e-4))
+        error('Bug in lambdaarch for copula ''%s''.\ncopulastat: %s\nlambdaarch: %s', family{i}, num2str(taus1), num2str(taus2))
+    end
+end 
+
+fprintf('Everything looks fine.\n')
 
 % TEST BCS
 run TEST_acf
-close
+%close
 
 
