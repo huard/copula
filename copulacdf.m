@@ -62,7 +62,7 @@ switch lower(family)
         c = (u.^(-alpha)+v.^(-alpha)-1).^(-1./alpha);
         
     case 'fgm' % Farlie, Gumbel, Morgenstern
-        c = u.*v.*(1+alpha.*(1-u).*(v));
+        c = u.*v.*(1+alpha.*(1-u).*(1-v));
         
     case 'amh' % Ali, Mikhail, Haq
         c = (u.*v)./(1-alpha.*(1-u).*(1-v));
@@ -76,6 +76,18 @@ switch lower(family)
     case 'joe' % Joe, 1997
         c = 1 - (((1-u).^alpha)+((1-v).^alpha)-((1-u).^alpha).*((1-v).^alpha)).^(1./alpha);
         
+    case 'arch12' % Archemedean copula #12 in Nelsen's book.
+        c = 1 ./ (1 + ((1 ./ u - 1) .^ alpha + (1 ./ v - 1) .^ alpha) .^ (1 ./ alpha));
+
+    case 'arch14' % Archemedean copula #14 in Nelsen's book.
+        t1 = 1 ./ alpha;
+        t2 = u .^ (-t1);
+        t4 = (t2 - 1) .^ alpha;
+        t5 = v .^ (-t1);
+        t7 = (t5 - 1) .^ alpha;
+        t9 = (t4 + t7) .^ t1;
+        c = (1 + t9) .^ (-alpha);
+
     otherwise
         error('Copula family ''%s'' not recognized.', family)
 end

@@ -6,7 +6,7 @@ function tau = copulastat(family,alpha)
 %
 %   INPUT
 %       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't',
-%               'AMH', 'Joe', 'FGM', 'Arch12', 'Arch14'.
+%               'AMH', 'FGM', 'Arch12', 'Arch14'.
 %       ALPHA: Copula parameter.
 %   
 %   OUTPUT
@@ -57,14 +57,14 @@ switch lower(family)
         t3 = 2*alpha .* t1;
         tau = 1- 2/3 * (t2 - t3 + alpha + t1) ./ t0;
         
-%     case 'gb'
-%         for i=1:length(alpha)
-%             if alpha(i) ~= 0;
-%                 tau(i) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],'gb', alpha(i));
-%             end
-%         end
-        %tau(i) = 1 + 4 .* quad(@(x)lambdaarch('gb', x, alpha(i)),0,1);
-        
+    case 'gb'
+        for i=1:length(alpha)
+            if alpha(i) ~= 0;
+                tau(i) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],'gb', alpha(i));
+            end
+        end
+
+
     case 'joe'
         i = alpha ~= 1;
         for i=1:length(alpha)
@@ -73,8 +73,7 @@ switch lower(family)
             end
         end
         
-%        	tau(i) = 1 + 4 .* quad(@(x)lambdaarch('joe', x, alpha(i)),0,1);
-        
+       
     case 'fgm'    
         tau = (2/9).*alpha;
         

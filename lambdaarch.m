@@ -40,16 +40,16 @@ end
 % u(nonzero) = archemedeangenerator(family, t(nonzero), alpha) ./ denominator(nonzero);
 % 
 % u(zero) = sign(archemedeangenerator(family, t(zero), alpha)).*realmax;
-type = family;
 
-den = generateurarchderivee(t,type,alpha);
-nonnul = (den~=0);
-nul= (den == 0);
 
-u(nonnul) = generateurarch(t(nonnul),type,alpha)./generateurarchderivee(t(nonnul),type,alpha);
-u(nul) = sign(generateurarch(t(nul),type,alpha)).*realmax;
+den = archemedeangeneratorderivative(t,family,alpha);
+nonzero = (den~=0);
+zero= (den == 0);
 
-function y = archemedeangenerator(family, x, alpha)
+u(nonzero) = archemedeangenerator(t(nonzero),family,alpha)./archemedeangeneratorderivative(t(nonzero),family,alpha);
+u(zero) = sign(archemedeangenerator(t(zero),family,alpha)).*realmax;
+
+function y = archemedeangenerator2(family, x, alpha)
 %
 %    function y = archemedeangenerator(family, x[, alpha])
 %
@@ -104,19 +104,19 @@ switch lower(family)
         error('Unrecognized copula family: ''%s''',family);
 end
 
-function y = archemedeangeneratorderivative(family, x, alpha);
+function y = archemedeangeneratorderivative2(family, x, alpha);
 %
 %    function y = archemedeangeneratorderivative(family, x, alpha)
 %
 %    Function second derivate of the generator of the archimedean copulas, positive on [0,1]
 %
-%    INPUT   
-%	FAMILY: One of  {'ind' 'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'}
-%	X:      Vector that lies in [0,1]
+%   INPUT   
+%	    FAMILY: One of  {'ind' 'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'}
+%	    X:      Vector that lies in [0,1]
 %       ALPHA:  Parameter of the copula (None for independent).
 %
 %    OUTPUT
-%	Y:      Vector of the second derivative of generator at points x.
+%	    Y:      Vector of the second derivative of generator at points x.
 %
 
 % Guillaume EVIN
@@ -155,20 +155,22 @@ switch lower(family)
         error('Unrecognized copula family: ''%s''',family);
 end
 
-function y = generateurarchderivee(x,type,parametre)
-%function y = generateurarchderivee(x,type,parametre)
+function y = archemedeangeneratorderivative(x, family, alpha)
 %
-% Function first derivate of the generator of the archimedean copulas, negative on [0,1]
+%    function y = archemedeangeneratorderivative(family, x, alpha)
 %
-% INPUTS:   x is a vector that lies in [0,1]
-%           type is one of the list {'ind' 'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'}
-%           parametre is the parameter of the copula, none for the independant copula
+%    Function second derivate of the generator of the archimedean copulas, positive on [0,1]
 %
-% OUTPUTS:	y, a vectors that contains the first derivate of the generator on the
-% points x
+%   INPUT   
+%	    FAMILY: One of  {'ind' 'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'}
+%	    X:      Vector that lies in [0,1]
+%       ALPHA:  Parameter of the copula (None for independent).
 %
+%    OUTPUT
+%	    Y:      Vector of the derivative of generator at points x.
+%
+
 % Guillaume EVIN
-%
 %  13 May, 2004.
 
 if (nargin < 2 || nargin > 3)
@@ -176,62 +178,62 @@ if (nargin < 2 || nargin > 3)
 end
 
 y = ones(size(x)).*-realmax;
-nonnul = (x ~= 0);
+nonzero = (x ~= 0);
 
-switch lower(type)
+switch lower(family)
     
     case 'ind' %independance
-        y(nonnul) = -1./x(nonnul);
+        y(nonzero) = -1./x(nonzero);
         
     case 'amh' %Copule de Ali, Mikhail and Haq 1978
-        if (parametre < -1 || parametre >= 1)
+        if (alpha < -1 || alpha >= 1)
             error('on doit avoir theta dans [-1,1[ pour le copule de Ali, Mikhail et Haq');
         end
-        y(nonnul) = parametre./(1-parametre.*(1-x(nonnul)))-1./x(nonnul);
+        y(nonzero) = alpha./(1-alpha.*(1-x(nonzero)))-1./x(nonzero);
                 
     case 'gb' %Copule de Gumbel 1960, Barnett 1980
-        if (parametre < 0 || parametre > 1)
+        if (alpha < 0 || alpha > 1)
             error('on doit avoir theta dans [0,1] pour le copule de Gumbel et Barnett');
         end
-        y(nonnul) = (parametre./x(nonnul))./(parametre.*log(x(nonnul))-1); 
+        y(nonzero) = (alpha./x(nonzero))./(alpha.*log(x(nonzero))-1); 
         
     case 'gumbel' %Copule de Gumbel 1960, Hougaard 1986
-        if parametre < 1
+        if alpha < 1
             error('on doit avoir theta >= 1 pour le copule de Gumbel');
         end
         
-        y(nonnul) = (-parametre./x(nonnul)).*((-log(x(nonnul))).^(parametre-1)); 
+        y(nonzero) = (-alpha./x(nonzero)).*((-log(x(nonzero))).^(alpha-1)); 
                 
     case 'clayton' %Copule de Clayton (Clayton 1978)
-        if parametre < 0
+        if alpha < 0
             error('on doit avoir theta >= 0 pour le copule de Clayton');
         end
-        y(nonnul) = (-parametre).*(x(nonnul).^(-parametre-1));
+        y(nonzero) = (-alpha).*(x(nonzero).^(-alpha-1));
             
     case 'frank' %Copule de Frank (Frank 1979)
-        if parametre == 0
+        if alpha == 0
             error('on doit avoir theta different de 0 pour le copule de Franck');
         end
-        y(nonnul) = (parametre.*exp(-parametre.*x(nonnul)))./(-1+exp(-parametre.*x(nonnul)));
+        y(nonzero) = (alpha.*exp(-alpha.*x(nonzero)))./(-1+exp(-alpha.*x(nonzero)));
                 
     case 'joe' %Copule de Joe (Joe 1997)
-        if parametre < 1
+        if alpha < 1
             error('on doit avoir theta >= 1 pour le copule de Joe');
         end
-        y(nonnul) = (parametre.*((1-x(nonnul)).^(parametre-1)))./((1-x(nonnul)).^parametre-1);
+        y(nonzero) = (alpha.*((1-x(nonzero)).^(alpha-1)))./((1-x(nonzero)).^alpha-1);
             
     otherwise
-        error('Type de copule archimédien inconnu: ',type);
+        error('family de copule archimédien inconnu: ',family);
 end
 
-function y = generateurarch(x,type,parametre)
-%function y = generateurarch(x,type,parametre)
+function y = archemedeangenerator(x,family,alpha)
+%function y = generateurarch(x,family,alpha)
 %
 % Function generator of the archimedean copulas
 %
 % INPUTS:   x is a vector that lies in [0,1]
-%           type is one of the list {'ind' 'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'}
-%           parametre is the parameter of the copula, none for the independant copula
+%           family is one of the list {'ind' 'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'}
+%           alpha is the parameter of the copula, none for the independant copula
 %
 % OUTPUTS:	y, a vectors that contains the results of the generator on the
 % points x
@@ -245,52 +247,52 @@ if (nargin < 2 || nargin > 3)
 end
 
 y = ones(size(x)).*realmax; %le générateur peut tendre vers l'infini en 0
-nonnul = (x ~= 0);
+nonzero = (x ~= 0);
     
-switch lower(type)
+switch lower(family)
     
     case 'ind' %independance
-        y(nonnul) = -log(x(nonnul));
+        y(nonzero) = -log(x(nonzero));
         
     case 'amh' %Copule de Ali, Mikhail and Haq 1978
-        if (parametre < -1 || parametre >= 1)
+        if (alpha < -1 || alpha >= 1)
             error('on doit avoir theta dans [-1,1[ pour le copule de Ali, Mikhail et Haq');
         end
-        y(nonnul) = log((1-parametre*(1-x(nonnul)))./x(nonnul));
+        y(nonzero) = log((1-alpha*(1-x(nonzero)))./x(nonzero));
         
     case 'gb' %Copule de Gumbel 1960, Barnett 1980
-        if (parametre < 0 || parametre > 1)
+        if (alpha < 0 || alpha > 1)
             error('on doit avoir theta dans [0,1] pour le copule de Gumbel et Barnett');
         end
-        y(nonnul) = log(1-parametre*log(x(nonnul))); 
+        y(nonzero) = log(1-alpha*log(x(nonzero))); 
         
         
     case 'gumbel' %Copule de Gumbel 1960, Hougaard 1986
-        if parametre < 1
+        if alpha < 1
             error('on doit avoir theta >= 1 pour le copule de Gumbel');
         end
-        y(nonnul) = (-log(x(nonnul))).^parametre; 
+        y(nonzero) = (-log(x(nonzero))).^alpha; 
         
     case 'clayton' %Copule de Clayton (Clayton 1978)
-        if parametre < 0
+        if alpha < 0
             error('on doit avoir theta >= 0 pour le copule de Clayton');
         end
-        y(nonnul) = x(nonnul).^(-parametre)-1;
+        y(nonzero) = x(nonzero).^(-alpha)-1;
         
     case 'frank' %Copule de Frank (Frank 1979)
-        if parametre == 0
+        if alpha == 0
             error('on doit avoir theta different de 0 pour le copule de Franck');
         end
-        y(nonnul) = -log((exp(-parametre.*x(nonnul))-1)./(exp(-parametre)-1)); 
+        y(nonzero) = -log((exp(-alpha.*x(nonzero))-1)./(exp(-alpha)-1)); 
         
     case 'joe' %Copule de Joe (Joe 1997)
-        if parametre < 1
+        if alpha < 1
             error('on doit avoir theta >= 1 pour le copule de Joe');
         end
         
-        y(nonnul) = -log(1-(1-x(nonnul)).^parametre);  
+        y(nonzero) = -log(1-(1-x(nonzero)).^alpha);  
         
     
 otherwise
-    error('Type de copule archimédien inconnu: ',type);
+    error('family de copule archimédien inconnu: ',family);
 end

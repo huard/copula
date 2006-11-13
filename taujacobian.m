@@ -41,12 +41,21 @@ switch lower(family)
         j = 2./((alpha + 2).^2);
         
     case {'frank'} 
-        t1 = exp(alpha);
-        t2 = (pi^2 + 3*alpha .* ( 1 + alpha + alpha ./ (t1-1)));
-        t3 = 6 * alpha .* log(1 - t1);
-        t4 = 6 * dilog(t1);
-        j =  (4* t2  - t3 - t4)./ 3 ./ alpha.^3;
+%         t1 = exp(alpha);
+%         t2 = (pi^2 + 3*alpha .* ( 1 + alpha + alpha ./ (t1-1)));
+%         t3 = 6 * alpha .* log(1 - t1);
+%         t4 = 6 * dilog(t1);
+%         j =  (4* t2  - t3 - t4)./ 3 ./ alpha.^3;
         
+t2 = exp(alpha);
+t5 = pi ^ 2;
+t7 = 1 - t2;
+t8 = log(t7);
+t9 = alpha .* t8;
+t13 = dilog(t2);
+t17 = alpha .^ 2;
+j = -4 / 3 * (-3 * alpha + 3 * alpha .* t2 - t5 + t5 .* t2 + 6 * t9 - 6 * t9 .* t2 + 6 * t13 - 6 * t13 .* t2 + 3 * t2 .* t17) ./ t17 ./ alpha ./ t7;
+
         
     case 'gumbel'
         j = 1./(alpha.^2);
