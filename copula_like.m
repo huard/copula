@@ -31,6 +31,7 @@ prior_alpha = log(taujacobian(family, alpha));
 prior_tau = log(ones(size(prior_alpha)));
 
 % Combine
-loglike = likelihood + prior_alpha + prior_tau;
+%%%% Il faut enlever le prior sur tau non ? %%%%%
+loglike = likelihood + prior_alpha - prior_tau;
 
 p = exp(loglike);
