@@ -13,8 +13,15 @@ function p = bcs(family, U, boundaries, prior_tau)
 %       PRIOR_TAU : Function handle returning the parent prior for TAU. Not
 %                   implemented yet. Current: uniform 
 %
-%   OUTPUT:         The weight of each copula family.
+%   OUTPUT
+%       P         : The weight of each copula family.
 %
+%   NOTES
+%       A prior for the model is applied, proportional to 1/Lambda,
+%       where Lambda is the interval spanned by Kendall's tau. This 
+%       interval is equal the intersection of the copula boundaries 
+%       on tau and the boundaries specified by the user. 
+
 
 %   Reference
 %   Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
@@ -57,7 +64,7 @@ for i=1:length(family)
     alpha_max = bounds_alpha(2);
 
     % Integrate the likelihood over the parameter range.
-    p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-4, [0,128], family{i}, U);
+    p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-4, [0,128], family{i}, U, prior_tau);
     
     % Prior for the copula family
     p(i) = p(i)/diff(bounds_tau);
