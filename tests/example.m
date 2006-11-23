@@ -1,30 +1,31 @@
-% Example
+% Example of application in hydrology
 % Finding the copula family that describes best the correlation between
-% maximum annual discharges and volumes. 
+% maximum annual river discharges and volumes. 
 
 % Load data
 load volume.txt
 load discharge.txt
 
-% Compute fractile assuming normal margins. 
+% Compute quantiles assuming normal margins. 
 par_dis=[1558.6,460.65];
 par_vol=[4456.52,915.71];
-
 u= normcdf(discharge,par_dis(1),par_dis(2));
 v = normcdf(volume,par_vol(1),par_vol(2));
 
-% Octave
-%    udeb= normal_cdf(deb,par_deb(1),par_deb(2));
-%    uvol = normal_cdf(vol,par_v(1),par_v(2));
-
+% Data
 U = [u';v']';
 
-% Compute weight of each copula family.
-COPULAS={'AMH' 'Gumbel' 'Frank' 'Clayton' 'Arch12' 'Arch14' 'Gaussian' 'FGM'};
-p = bcs(COPULAS, U, [-.97 .97]);
+% Prior on tau (a little awkward to maintain compatibility with MatLab 6).
+prior_tau = inline('1/sqrt(2*pi)/.3 * exp(-((x-.5).^2)/2/.3^2)', 'x');
 
-% This is the place where you add the effect of the prior on the copula
-% family, if different from uniform.
+% Copula families to test.
+COPULAS={'AMH' 'Gumbel' 'Frank' 'Clayton' 'Arch12' 'Arch14' 'Gaussian' 'FGM' 'Ind'};
+
+% Compute weight of each copula family.
+p = bcs(COPULAS, U, [-.97 .97], prior_tau);
+
+% This would be the place to include the effect of the prior on the copula
+% family, if different from the one defined in the paper by Huard et al.
 
 % Normalize weights
 p = p./sum(p);

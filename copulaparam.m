@@ -5,9 +5,9 @@ function alpha = copulaparam(family,tau)
 %   Returns copula parameter, given Kendall's rank correlation.
 %
 %   INPUT
-%       FAMILY: One of 'Clayton', 'Frank', 'Gumbel', 'Gaussian', 't', 'AMH', 
-%               'FGM', 'Arch12', 'Arch14'.
-%       TAU: Kendall's rank correlation.%       
+%       FAMILY: One of {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
+%               'Gaussian' 'Gumbel' 't'}
+%       TAU: Kendall's rank correlation.       
 %   
 %   OUTPUT
 %	ALPHA: Copula parameter.       
@@ -71,33 +71,7 @@ switch lower(family)
                 alpha(i) = fzero(@invcopulastat,[-1 0.99999999],[],'amh',tau(i));
             end
         end
-        
-    case {'gb'}
-        % There's no closed form for alpha in terms of tau, so alpha has to be
-        % determined numerically.
-        for i=1:length(tau)
-            if tau(i) == 0 
-                alpha(i) = 0 
-            else
-                alpha(i) = fzero(@invcopulastat,[0 1],[],'gb',tau(i));
-            end
-        end
-
-    case {'joe'}
-        nn = (tau == 0) ;
-        alpha(nn) = 0;
-        % There's no closed form for alpha in terms of tau, so alpha has to be
-        % determined numerically.
-        for i=1:length(tau)
-            if tau(i) == 0 
-                alpha(i) = 0 
-            else
-                alpha(i) = fzero(@invcopulastat,[1 99],[],'joe',tau(i));
-                % limited to 99 for computation limit. alpha = 99
-                % corresponds to tau = 0.9895
-            end
-        end
-        
+               
     case 'arch12'
         alpha = 2./(3.*(1-tau));
         
@@ -116,14 +90,3 @@ guess_tau = copulastat(family, alpha);
 err = guess_tau - target_tau;
 
 
-function err = invcopulastat2(alpha, family, target_tau)
-% Return difference between target_tau and tau computed from lambdaarch
-% with a guess for alpha.
-
-if abs(alpha) < realmin %???
-    tau = 0;
-else
-    tau = 1 + 4 .* quadg('lambdaarch',eps,1-eps,[],[],family,alpha);
-end
-[alpha, tau, tau-target_tau];
-err = tau - target_tau;

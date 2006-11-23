@@ -33,8 +33,6 @@ function p = bcs(family, U, boundaries, prior_tau)
 % Set defaults
 if nargin <= 3
     prior_tau = inline('1');
-else
-    printf('Sorry, this feature is not implemented.')
 end
 
 if nargin <= 2
@@ -48,25 +46,27 @@ end
 
 % Loop on each family to compute individual weight.
 for i=1:length(family)
-
-    % Constrain the boundaries to the domain covered by each family.
-    bounds_tau = constrain_tau(family{i}, boundaries);
-
-    % If bounds_tau is contrained, shift the boundaries away from the limit
-    % of the domain, since many functions don't deal well with those.
-    shift = bounds_tau ~= boundaries;
-    correct = [1,-1];
-    bounds_tau(shift) = bounds_tau(shift) .* (1 + correct(shift).*sign(bounds_tau(shift))*.01);
-
-    % Translate the boundaries on tau in copula parameters.
-    bounds_alpha = copulaparam(family{i}, bounds_tau);
-    alpha_min = bounds_alpha(1);
-    alpha_max = bounds_alpha(2);
-
-    % Integrate the likelihood over the parameter range.
-    p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-4, [0,128], family{i}, U, prior_tau);
-    
-    % Prior for the copula family
-    p(i) = p(i)/diff(bounds_tau);
-    
+    if strcmp(lower(family(i)), 'ind')
+        p(i) = 1;
+    else
+        % Constrain the boundaries to the domain covered by each family.
+        bounds_tau = constrain_tau(family{i}, boundaries);
+        
+        % If bounds_tau is contrained, shift the boundaries away from the limit
+        % of the domain, since many functions don't deal well with those.
+        shift = bounds_tau ~= boundaries;
+        correct = [1,-1];
+        bounds_tau(shift) = bounds_tau(shift) .* (1 + correct(shift).*sign(bounds_tau(shift))*.01);
+        
+        % Translate the boundaries on tau in copula parameters.
+        bounds_alpha = copulaparam(family{i}, bounds_tau);
+        alpha_min = bounds_alpha(1);
+        alpha_max = bounds_alpha(2);
+        
+        % Integrate the likelihood over the parameter range.
+        p(i) = quadg('copula_like',alpha_min, alpha_max, 1e-4, [0,128], family{i}, U, prior_tau);
+        
+        % Prior for the copula family
+        p(i) = p(i)/diff(bounds_tau);
+    end
 end

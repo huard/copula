@@ -57,20 +57,6 @@ switch lower(family)
         t3 = 2*alpha .* t1;
         tau = 1- 2/3 * (t2 - t3 + alpha + t1) ./ t0;
 
-    case 'gb'
-        for i=1:length(alpha)
-            if alpha(i) ~= 0;
-                tau(i) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],'gb', alpha(i));
-            end
-        end
-
-    case 'joe'
-        for i=1:length(alpha)
-            if alpha(i) ~= 1;
-                tau(i) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],'joe', alpha(i));
-            end
-        end
-
     case 'fgm'
         tau = (2/9).*alpha;
 
