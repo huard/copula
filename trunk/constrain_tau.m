@@ -13,7 +13,7 @@ function  newbounds = constrain_tau(family, bounds)
 %       NEWBOUNDS: Intersection of BOUNDS and the FAMILY domain in tau.
 %
 %   Example:
-%       restrict_tau('fgm', [0,1])
+%       constrain_tau('fgm', [0,1])
 %       ans = 
 %           0.0000, .22222
 %

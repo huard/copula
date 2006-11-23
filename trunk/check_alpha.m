@@ -13,7 +13,7 @@ function boolean = check_alpha(family, alpha)
 %       BOOLEAN: Boolean array. True if tau is in the domain, False otherwise.
 %       
 
-% D. Huard, Nov. 2006
+% G. Evin, D. Huard, Nov. 2006
 
 switch lower(family)
     

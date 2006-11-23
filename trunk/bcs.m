@@ -27,8 +27,6 @@ function p = bcs(family, U, boundaries, prior_tau)
 %   Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
 %   Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
 
-%   TODO: Implement prior_tau
-
 
 % Set defaults
 if nargin <= 3
