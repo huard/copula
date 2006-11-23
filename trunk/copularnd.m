@@ -32,9 +32,12 @@ if strcmp(lower(family), 'ind')
     n = varargin{1};
     u = rand(n,2);
 else
-    
+    % Checking
     alpha = varargin{1};
-    check_alpha(family, alpha);
+    pass = check_alpha(family, alpha);
+    if any(~pass)
+        error('Bad parameter.')
+    end
     if numel(alpha) ~= 1 & ~strcmp(lower(family), 't')
         error('ALPHA must be a scalar.');
     end
@@ -87,10 +90,8 @@ else
                 case {'gumbel' 'fgm' 'amh' 'arch12' 'arch14' 'gb' 'joe'}
                     % The inverse conditional CDF does not have a closed form for this
                     % copula.  The inversion must be done numerically.
-                    u2 = condCDFinv(@copCondCDF,u1,p,alpha,family);
-                    u = [u1 u2];
-                otherwise
-                    error('Unrecognized copula family: ''%s''.',family);        
+                    u2 = condCDFinv(@conditionalcdf,u1,p,alpha,family);
+                    u = [u1 u2]; 
             end
             
             

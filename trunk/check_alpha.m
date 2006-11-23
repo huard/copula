@@ -1,6 +1,6 @@
-function boolean = check_alpha(family, alpha)
+function boolean = check_alpha(family, alpha, nu)
 %
-%   FUNCTION BOOLEAN = CHECK_ALPHA(FAMILY, ALPHA])
+%   FUNCTION BOOLEAN = CHECK_ALPHA(FAMILY, ALPHA, [NU])
 %   
 %   Check ALPHA is a valid parameter for the copula family.
 %
@@ -8,7 +8,7 @@ function boolean = check_alpha(family, alpha)
 %       FAMILY: One of {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
 %               'Gaussian' 'GB' 'Gumbel' 'Joe' 't'}
 %       ALPHA:  Array of copula parameters. 
-%               For the t copula, alpha must be [rho, nu].
+%               For the t copula, NU must be passed.
 %   
 %   OUTPUT
 %       BOOLEAN: Boolean array. True if tau is in the domain, False otherwise.
@@ -21,9 +21,7 @@ switch lower(family)
     case {'gaussian' 'fgm'}
         boolean = abs(alpha)<=1;
     case 't'
-        rho = alpha(1);
-        nu = alpha(2);
-        boolean = abs(rho)<=1 & nu >= 0 & mod(nu,1)==0;
+        boolean = abs(alpha)<=1 & nu >= 0 & mod(nu,1)==0;
     case 'clayton'
         boolean = (alpha >= 0);
     case 'frank'
@@ -37,7 +35,7 @@ switch lower(family)
     case 'ind'
         boolean = ones(size(alpha));
     otherwise
-        error('Copula family ''%s'' not recognized', family)
+        error('Copula family ''%s'' not recognized.', family)
 end
 
 if any(~boolean) 

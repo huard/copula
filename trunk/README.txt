@@ -1,21 +1,19 @@
-﻿COPULA Open Source Project
+COPULA Open Source Project
 Hosted at code.google.com/p/copula/
 
 This set of Matlab (TM) files provides the functions needed to estimate the 
 best copula, given a set of copulas and fractiles. 
 
 The method is described in the paper
-Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
+Huard, D., �vin, G. and Favre, A-C. Bayesian Copula Selection, 
 Journal of Computational Statistics and Data Analysis, 2005, 51, 809-822.
 
 Currently, only a subset of bivariate copulas are supported, namely
-Clayton, Gumbel, Frank, Gaussian, AMH, FGM, Arch12, Arch14.
+Clayton, Gumbel, Frank, Gaussian, AMH, FGM, Arch12, Arch14, Ind.
 
 
-
-The main function is bcs.m, which computes the probability for a collection of copula families. See tests/example.m to see how it works. 
-
-
+The main function is bcs.m, which computes the probability for a collection of copula families. 
+See tests/example.m to see how it works. 
 
 
 Functions description
@@ -46,9 +44,10 @@ tauboundaries: Return the domain spanned by Kendall's tau.
 taujacobian: Return the derivative of tau(alpha) with respect to alpha.
 
 
-
-
-
+TODO: 
+Add a formula to compute empirically Kendall's tau. 
+Add a TestSuite for the random generator.
+Check the results of BCS using synthetic data. 
 
 The code is written mostly by G. Evin and D. Huard. It extends functions originaly written by P. Perkins.
 
@@ -57,6 +56,6 @@ http://code.google.com/p/copula/issues/list
 
 
 David Huard 
-November 12, 2006
+November 22, 2006
 
 

@@ -33,17 +33,29 @@ fprintf('Passed !\n')
 
 % TEST CHECK_ALPHA
 fprintf('Test check_alpha ... ')
-alpha = [1,2,3,1000];
-pass = check_alpha('gumbel', alpha);
-if any(~pass)
-    error('Bug in check_alpha for Gumbel')
+family = {'amh' 'arch12' 'arch14' 'clayton' 'frank' 'gaussian' 'fgm' 'gumbel'};
+for i=1:length(family)
+    bounds = tauboundaries(family{i});
+    tau = linspace(bounds(1)+.01, bounds(2)-.01, 10);
+    alpha = copulaparam(family{i}, tau);
+    pass = check_alpha(family{i}, alpha);
+    if any(~pass)
+        error('Bug in check_alpha for ''%s''.', family{i})
+    end
 end
+if ~check_alpha('t', -.9, 2) | check_alpha('t', -.9, 2.4)
+    error('Bug in check_alpha for t.')
+end
+try
+ check_alpha('t', -.9);
+ catch
+ end
 fprintf('Passed !\n')
 
 
 % TEST COPULASTAT
 fprintf('Test copulastat ... ')
-families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank'};
+families = {'Clayton', 'Gumbel', 'Gaussian', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank'};
 alpha = linspace(-5,5,50);
 for i=1:length(families)
     pass = check_alpha(families{i}, alpha);
@@ -94,6 +106,11 @@ if any(~isnear([-1,1.047197551/pi, 2.239539030/pi], copulastat('gaussian', [-1, 
     error('Bug in copulastat for Gaussian.')
 end
 
+%% t
+if any(~isnear([-1,1.047197551/pi, 2.239539030/pi], copulastat('gaussian', [-1, .5, .9]), 1e-6))
+    error('Bug in copulastat for t.')
+end
+
 %% Arch12
 if any(~isnear([1/3, 2/3, 8/9], copulastat('arch12', [1,2,6]), 1e-6))
     error('Bug in copulastat for Arch12.')
@@ -108,7 +125,7 @@ end
 if any(~isnear([-2/9, 0, 2/27, 2/9], copulastat('fgm', [-1, 0, 1/3, 1]), 1e-6))
     error('Bug in copulastat for FGM.')
 end
-fprintf('Passed !')
+fprintf('Passed !\n')
 
 
 % TEST COPULAPARAM
