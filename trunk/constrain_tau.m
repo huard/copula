@@ -5,7 +5,8 @@ function  newbounds = constrain_tau(family, bounds)
 %   Return boundaries on tau inside the domain range of each copula family.
 %
 %   INPUT
-%       FAMILY: One of the set 
+%       FAMILY: One of {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
+%               'Gaussian' 'Gumbel' 't'}
 %       BOUNDS: [tau1, tau2]
 %
 %   OUTPUT

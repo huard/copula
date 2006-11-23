@@ -43,7 +43,7 @@ fprintf('Passed !\n')
 
 % TEST COPULASTAT
 fprintf('Test copulastat ... ')
-families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank', 'GB', 'Joe'};
+families = {'Clayton', 'Gumbel', 'Gaussian', 't', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank'};
 alpha = linspace(-5,5,50);
 for i=1:length(families)
     pass = check_alpha(families{i}, alpha);
@@ -109,7 +109,7 @@ if any(~isnear([-2/9, 0, 2/27, 2/9], copulastat('fgm', [-1, 0, 1/3, 1]), 1e-6))
     error('Bug in copulastat for FGM.')
 end
 fprintf('Passed !')
-fprintf('  Test missing for Joe and GB. \n')
+
 
 % TEST COPULAPARAM
 fprintf('Test copulaparam ... ')
@@ -304,28 +304,9 @@ if any(~isnear([2/9,2/9,2/9,2/9], taujacobian('fgm', [-1,0,.5,1]), 1e-6))
 end
 fprintf('Passed !\n')
 
-% TEST LAMBDAARCH
-family = {'Clayton', 'Frank', 'Gumbel', 'AMH', 'Joe', 'GB'};
-alpha = linspace(-5,5,10);
-for i=1:length(family)
-    pass = check_alpha(family{i}, alpha);
-    alpha_passed = alpha(pass);
-    taus1 = copulastat(family{i}, alpha_passed);
-    taus2 = zeros(size(taus1));
-    for j=1:length(taus1)
-        try
-            taus2(j) = 1 + 4 .* quadg('lambdaarch',0,1,[],[],family{i}, alpha_passed(j));
-        catch
-            family{i}
-        end
-    end
-    if any(~isnear(taus1, taus2, 1e-4))
-        error('Bug in lambdaarch for copula ''%s''.\ncopulastat: %s\nlambdaarch: %s', family{i}, num2str(taus1), num2str(taus2))
-    end
-end 
-
 fprintf('Everything looks fine.\n')
 
 % TEST BCS
-run example.m
+fprintf('\nRunning the example...\n')
+run example
 

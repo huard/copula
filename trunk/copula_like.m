@@ -1,6 +1,6 @@
-function p = copula_like(alpha, family, U, prior_tau_f)
+function l = copula_like(alpha, family, U, prior_tau)
 %
-%   P = COPULA_LIKE(FAMILY, U, ALPHA)
+%   P = COPULA_LIKE(FAMILY, U, ALPHA [,PRIOR_TAU])
 %
 %   Return the likelihoods computed at ALPHA.
 %   \prod c(u,v|ALPHA) * prior(ALPHA|TAU) * prior(TAU) 
@@ -10,12 +10,12 @@ function p = copula_like(alpha, family, U, prior_tau_f)
 %       U        : Nx2 matrix of quantiles (u,v) in [0,1]^2.
 %       ALPHA    : 1xM vector of copula parameters.
 %       PRIOR_TAU: Function of TAU returning the normalized prior for TAU.
+%                  Optional, default is uniform.
 %
 %   OUTPUT
-%       P: Vector (1xM) 
+%       L: Likelihood at each parameter (1xM). 
 %
 
-%   TODO: Implement user-defined prior on tau.
 %   G. Evin & D. Huard, 2006
 
 %   Compute density
@@ -29,10 +29,12 @@ prior_alpha = log(taujacobian(family, alpha));
 
 % Prior for Tau
 if nargin < 4
-    prior
-prior_tau = log(prior_tau(copulastat(family, alpha)))
+    pr_tau = 0;    
+else
+    pr_tau = log(prior_tau(copulastat(family, alpha)));
+end
 
 % Combine likelihood and priors
-loglike = likelihood + prior_alpha + prior_tau;
+loglike = likelihood + prior_alpha + pr_tau;
 
-p = exp(loglike);
+l = exp(loglike);

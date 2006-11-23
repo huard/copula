@@ -5,7 +5,8 @@ function c = copulacdf(family, U, alpha)
 %   Return  C(u,v|alpha) for the given copula family.
 % 
 %   INPUT:
-%       FAMILY: One of 'Ind', 'Gumbel', 'Clayton', 'FGM', 'AMH', 'GB', 'Frank', 'Joe'.
+%       FAMILY: One from {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
+%               'GB' 'Gumbel' 'Ind' 'Joe'}
 %       U:      Quantiles (Nx2)       
 %       ALPHA:  Copula parameter (1xM)
 % 

@@ -41,8 +41,6 @@ copulapdf: Return the probability distribution function of the copula.
 
 copulastat: Kendall's rank correlation for a copula.
 
-lambdaarch: 
-
 tauboundaries: Return the domain spanned by Kendall's tau.
 
 taujacobian: Return the derivative of tau(alpha) with respect to alpha.

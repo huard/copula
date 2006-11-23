@@ -5,8 +5,8 @@ function boolean = check_tau(family, tau)
 %   Check TAU is a valid Kendall's rank correlation for the copula family.
 %
 %   INPUT
-%       FAMILY: One of {'amh' 'arch12' 'arch14' 'clayton' 'frank'
-%               'gaussian' 't' 'fgm' 'gumbel' 'joe'}
+%       FAMILY: One of {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
+%               'Gaussian' 'GB' 'Gumbel' 'Joe' 'Plackett' 't'}
 %       TAU:    Array of Kendall's tau. 
 %          
 %   OUTPUT
@@ -14,9 +14,6 @@ function boolean = check_tau(family, tau)
 %       
 
 %   G. Evin, D. Huard, Nov. 2006
-
-%alpha = copulaparam(family, tau)
-%pass = check_alpha(alpha)
 
 base = (tau >= -1) & (tau <=1);
 
