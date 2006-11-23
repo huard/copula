@@ -2,15 +2,15 @@ function alpha = copulaparam(family,tau)
 %
 %   ALPHA = COPULAPARAM(FAMILY,TAU)
 %   
-%   Returns copula parameter, given Kendall's rank correlation.
+%   Return the copula parameter, given Kendall's rank correlation.
 %
 %   INPUT
 %       FAMILY: One of {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
 %               'Gaussian' 'Gumbel' 't'}
-%       TAU: Kendall's rank correlation.       
+%       TAU:    Kendall's rank correlation.       
 %   
 %   OUTPUT
-%	ALPHA: Copula parameter.       
+%	    ALPHA:  Copula parameter.       
 %   
 %
 %   Example:

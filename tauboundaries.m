@@ -3,12 +3,11 @@ function bounds = tauboundaries(family);
 %   FUNCTION BOUNDS, FUNC = TAUBOUNDARIES(FAMILY)
 %
 %   Return the minimum and maximum Kendall's tau spanned by a given copula
-%   family, and a function handle returning one is tau is in the domain,
-%   and 0 otherwise.
+%   family.
 % 
 %   INPUT
-%       FAMILY: A copula from the set {'gaussian', 't', 'clayton', 'gumbel', 'frank', 
-%               'arch12', 'arch14', 'joe', 'fgm', 'amh'}
+%       FAMILY: One from {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
+%               'Gaussian' 'Gumbel' 't'}
 %
 %   OUTPUT
 %       BOUNDS: [tau_min, tau_max]

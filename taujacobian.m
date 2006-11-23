@@ -2,8 +2,7 @@ function j = taujacobian(family, alpha)
 %
 %   FUNCTION J = TAUJACOBIAN(FAMILY, ALPHA)
 %   
-%   Return the derivative of g'(ALPHA), where
-%   where tau = g(ALPHA).
+%   Return the derivative of tau(alpha) with respect to alpha.
 %
 %   INPUT
 %       FAMILY: One of {'Clayton', 'Frank', 'Gumbel', 'Gaussian', 'AMH',

@@ -13,7 +13,7 @@ function c = copulapdf(family, U, alpha)
 %       ALPHA: NxM vector of copula parameters. 
 %
 %   OUTPUTS
-%       C: NxM matrix of C(u,v|ALPHA) 
+%       C: Copula density C(u,v|ALPHA) (NxM).
 
 %   Guillaume EVIN, 13 May, 2004.
 %   D. Huard, Nov. 2006
