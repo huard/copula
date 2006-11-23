@@ -1,31 +1,34 @@
 function p = copCondCDF(family, u1,u2,alpha)
 %
-%    P = COPCONDCDF (FAMILY, U1, U2, ALPHA)
+%   P = COPCONDCDF (FAMILY, U1, U2, ALPHA)
 %
-%    Conditional cumulative distribution function C(U2|U1, ALPHA)
+%   Conditional cumulative distribution function C(U2|U1, ALPHA)
 %
-%    INPUT
-%	FAMILY: One of {'GB' (Gumbel & Barnett), Gumbel, Joe, AMH, Arch12,
-%         	Arch14, Clayton, FGM and Frank.
-%	U1:     Quantile.
-%	U2: 	Quantile.
-%	ALPHA:	Copula parameter.    
+%   INPUT
+%	    FAMILY: One of {'GB' (Gumbel & Barnett), Gumbel, Joe, AMH, Arch12,
+%         	    Arch14, Clayton, FGM and Frank.}
+%	    U1:     Quantile.
+%	    U2: 	Quantile.
+%	    ALPHA:	Copula parameter.    
 %
-%    OUTPUT
-%	P: 	Conditional cumulative distribution of U2, given U1.
+%   OUTPUT
+%	    P:  	Conditional cumulative distribution of U2, given U1.
 %
 
 %   G. Evin, 2006
 
+p = zeros(size(u1)); 
 nz = ((u1~=0) & (u2~=0));
-p = zeros(size(u1)); u1=u1(nz);u2=u2(nz);
-switch type
+u1=u1(nz);
+u2=u2(nz);
+
+switch lower(family)
     case 'gb'
         p(nz) = (u2+u1.*u2.*(-alpha.*log(u2)./u1)).*exp(-alpha.*log(u1).*log(u2));
     case 'gumbel'
         nlog1 = -log(u1);
         nlog2 = -log(u2);
-        C = copula(u1,u2,'gumbel',alpha);
+        C = copulacdf('gumbel', [u1 u2],alpha);
         p(nz) = (nlog1.^(alpha-1)./u1).*((nlog1.^alpha + nlog2.^alpha).^(1/alpha-1)).*C;
     case 'joe'
         mu1 = 1-u1;

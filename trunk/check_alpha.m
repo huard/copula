@@ -1,13 +1,14 @@
 function boolean = check_alpha(family, alpha)
 %
-%   FUNCTION BOOLEAN = CHECK_ALPHA(FAMILY, ALPHA [, WARN])
+%   FUNCTION BOOLEAN = CHECK_ALPHA(FAMILY, ALPHA])
 %   
 %   Check ALPHA is a valid parameter for the copula family.
 %
 %   INPUT
-%       FAMILY: One of {'amh' 'arch12' 'arch14' 'clayton' 'frank'
-%               'gaussian' 't' 'fgm' 'gumbel'}
-%       ALPHA:    Array of copula parameters. 
+%       FAMILY: One of {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
+%               'Gaussian' 'GB' 'Gumbel' 'Joe' 't'}
+%       ALPHA:  Array of copula parameters. 
+%               For the t copula, alpha must be [rho, nu].
 %   
 %   OUTPUT
 %       BOOLEAN: Boolean array. True if tau is in the domain, False otherwise.
@@ -17,8 +18,12 @@ function boolean = check_alpha(family, alpha)
 
 switch lower(family)
     
-    case {'gaussian' 't' 'fgm'}
+    case {'gaussian' 'fgm'}
         boolean = abs(alpha)<=1;
+    case 't'
+        rho = alpha(1);
+        nu = alpha(2);
+        boolean = abs(rho)<=1 & nu >= 0 & mod(nu,1)==0;
     case 'clayton'
         boolean = (alpha >= 0);
     case 'frank'
@@ -38,9 +43,11 @@ end
 if any(~boolean) 
     wrong = num2str(alpha(~boolean));
     switch lower(family)
-        case {'gaussian' 't' 'fgm'}      
+        case {'gaussian' 'fgm'}      
             warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] for the %s copula.\nBad parameters: %s ', family, wrong);
             
+        case 't'
+            warning('COPULA:BadParameter', 'ALPHA must be in [-1, 1] and DF a positive integer for the t copula.\nBad parameters: %s ', wrong);
         case 'clayton'
             warning('COPULA:BadParameter', 'ALPHA must be nonnegative for the Clayton copula.\nBad parameters: %s', wrong);
             
