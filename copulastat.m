@@ -29,7 +29,7 @@ if nargin ~= 2
     error('Requires two input arguments.');
 end
 
-pass = check_alpha(family, alpha);
+pass = check_alpha(family, alpha, 0);
 
 if any(~pass)
     error('Invalid parameters.')
@@ -38,34 +38,37 @@ end
 tau = zeros(size(alpha));
 
 switch lower(family)
-    case {'gaussian' 't'}
+    case 'gaussian' 
         tau = 2.*asin(alpha)./pi;
-
+        
+    case 't'
+        tau = 2.*asin(alpha)./pi;
+        
     case 'clayton'
         tau = alpha ./ (2 + alpha);
-
+        
     case 'frank'
         tau = real(1 - (4*(1 - (-3*alpha.^2 - pi^2 + 6*alpha.*log(1 - exp(alpha)) + 6*dilog(exp(alpha)))./(6*alpha)))./alpha);
-
+        
     case 'gumbel'
         tau = 1 - 1./alpha;
-
+        
     case 'amh'
         t0 = alpha.^2;
         t1 = log(1-alpha);
         t2 =  t0 .* t1;
         t3 = 2*alpha .* t1;
         tau = 1- 2/3 * (t2 - t3 + alpha + t1) ./ t0;
-
+        
     case 'fgm'
         tau = (2/9).*alpha;
-
+        
     case 'arch12'
         tau = 1-(2/3)./alpha;
-
+        
     case 'arch14'
         tau = 1-2./(1+2.*alpha);
-
+        
     otherwise
         error('Unrecognized copula family: ''%s''',family);
 end
