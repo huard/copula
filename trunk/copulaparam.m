@@ -50,7 +50,7 @@ switch lower(family)
             else
                 % There's no closed form for alpha in terms of tau, so alpha has to be
                 % determined numerically.
-                alpha(i) = fzero(@invcopulastat,sign(tau(i)),[],'frank', tau(i));
+                alpha(i) = fzero(@invcopulastat,[-1e6, 700],[],'frank', tau(i));
                 
             end
         end

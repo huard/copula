@@ -48,6 +48,7 @@ switch lower(family)
         tau = alpha ./ (2 + alpha);
         
     case 'frank'
+        
         tau = real(1 - (4*(1 - (-3*alpha.^2 - pi^2 + 6*alpha.*log(1 - exp(alpha)) + 6*dilog(exp(alpha)))./(6*alpha)))./alpha);
         
     case 'gumbel'

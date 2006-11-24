@@ -1,16 +1,16 @@
-function l = copula_like(alpha, family, U, prior_tau)
+function p = posterior(alpha, family, U, prior_tau)
 %
-%   P = COPULA_LIKE(FAMILY, U, ALPHA [,PRIOR_TAU])
+%   P = POSTERIOR(FAMILY, U, ALPHA [,PRIOR_TAU])
 %
-%   Return the likelihoods computed at ALPHA.
+%   Return the posterior density computed at ALPHA.
 %   \prod c(u,v|ALPHA) * prior(ALPHA|TAU) * prior(TAU) 
 %
 %   INPUTS
-%       FAMILY   : one of {'ind', 'gaussian', 'gumbel' 'clayton' 'sim' 'frank' 'gb' 'amh' 'joe'}       
+%       FAMILY   : one of { 'arch12', 'arch14' 'ind', 'fgm' 'gaussian', 'gumbel' 'clayton' 'frank' 'amh'}       
 %       U        : Nx2 matrix of quantiles (u,v) in [0,1]^2.
 %       ALPHA    : 1xM vector of copula parameters.
 %       PRIOR_TAU: Function of TAU returning the normalized prior for TAU.
-%                  Optional, default is uniform.
+%                  
 %
 %   OUTPUT
 %       L: Likelihood at each parameter (1xM). 
@@ -20,7 +20,9 @@ function l = copula_like(alpha, family, U, prior_tau)
 
 %   Compute density
 c = copulapdf(family, U, alpha);
-
+if any(isinf(c))
+    error('Inf in copulapdf.')
+end
 % Compute data likelihood
 likelihood = sum(log(c), 1);
 
@@ -28,13 +30,9 @@ likelihood = sum(log(c), 1);
 prior_alpha = log(taujacobian(family, alpha));
 
 % Prior for Tau
-if nargin < 4
-    pr_tau = 0;    
-else
-    pr_tau = log(prior_tau(copulastat(family, alpha)));
-end
+pr_tau = log(prior_tau(copulastat(family, alpha)));
 
 % Combine likelihood and priors
-loglike = likelihood + prior_alpha + pr_tau;
+p = exp(likelihood + prior_alpha + pr_tau);
 
-l = exp(loglike);
+
