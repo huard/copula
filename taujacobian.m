@@ -76,3 +76,7 @@ j = -4 / 3 * (-3 * alpha + 3 * alpha .* t2 - t5 + t5 .* t2 + 6 * t9 - 6 * t9 .* 
     otherwise
         error('Unrecognized copula type: ''%s''.',family);
 end
+
+if any(j<0)
+    error('Negative value in taujacobian')
+end
