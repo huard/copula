@@ -1,6 +1,6 @@
 function p = posterior(alpha, family, U, prior_tau)
 %
-%   P = POSTERIOR(FAMILY, U, ALPHA [,PRIOR_TAU])
+%   P = POSTERIOR(ALPHA, FAMILY, U, [,PRIOR_TAU])
 %
 %   Return the posterior density computed at ALPHA.
 %   \prod c(u,v|ALPHA) * prior(ALPHA|TAU) * prior(TAU) 
