@@ -10,8 +10,8 @@ function p = bcs(family, U, boundaries, prior_tau)
 %       U         : Nx2 matrix of quantiles (u,v).
 %       BOUNDARIES: Integration boundaries on Kendall's tau 
 %                   Default: [-.95,.95])
-%       PRIOR_TAU : Function handle returning the parent prior for TAU. Not
-%                   implemented yet. Current: uniform 
+%       PRIOR_TAU : Function handle returning the parent prior for TAU. 
+%                   Default is uniform over the domain of tau covered by each copula.
 %
 %   OUTPUT
 %       P         : The weight of each copula family.
@@ -42,6 +42,11 @@ if any( (U < 0) | (U > 1) )
     error('Some quantiles are outside the unit hypercube.')
 end
 
+% Make sure we can iterate on family
+if ~iscell(family)
+    family = {family}
+end
+
 % Loop on each family to compute individual weight.
 for i=1:length(family)
     if strcmp(lower(family(i)), 'ind')
@@ -58,8 +63,8 @@ for i=1:length(family)
         
         % Translate the boundaries on tau in copula parameters.
         bounds_alpha = copulaparam(family{i}, bounds_tau);
-        alpha_min = bounds_alpha(1);
-        alpha_max = bounds_alpha(2);
+        alpha_min = bounds_alpha(1)
+        alpha_max = bounds_alpha(2)
         
         % Integrate the likelihood over the parameter range.
         p(i) = quadg('posterior',alpha_min, alpha_max, 1e-4, [0,128], family{i}, U, prior_tau);

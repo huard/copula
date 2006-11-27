@@ -19,6 +19,11 @@ function c = copulapdf(family, U, alpha)
 %   D. Huard, Nov. 2006
 %  
 
+% TODO: Deal with NaNs and Infs.
+% Replace Infs with realmax. 
+% Try to determine whether NaNs are underflow or overflow, and replace with
+% eps or realmax.
+
 % Check alpha is in the domain covered by the family.
 pass = check_alpha(family, alpha);
 if ~all(pass)

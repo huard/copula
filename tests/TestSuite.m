@@ -15,7 +15,7 @@
 warning('off');%, COPULA:BadParameter)
 
 % TEST COPULA_LIKE
-run test_copula_like
+run test_posterior
 run test_check_tau
 run test_check_alpha
 run test_copulastat
@@ -23,8 +23,9 @@ run test_copulaparam
 run test_copulapdf
 run test_copulacdf
 run test_taujacobian
+run test_copularnd
+%run test_copularnd2
 
-%run test_copularnd
 fprintf('Everything looks fine.\n')
 
 % TEST BCS
