@@ -30,6 +30,20 @@ for i=1:length(families)
     pdf = copulapdf(families{i}, U, alpha(pass));
 end
 
+
+% Check the calling with 4 arguments
+alpha = linspace(-5,5,50);
+u = rand(1,10);
+v = rand(1,5);
+[uu,vv] = meshgrid(u,v);
+for i=1:length(families)
+    pass = check_alpha(families{i}, alpha);
+    alphas = alpha(pass);
+    pdf = copulapdf(families{i}, u, v, alphas(4));
+    pdf = copulapdf(families{i}, uu, vv, alphas(4));
+end
+
+
 % Check analytical values with Maple
 %% Clayton
 pass = isnear([1.003064594, 1.603413484, 2.237830668], copulapdf('clayton', [.3,.4], [.1,2,5]), 1e-8);
