@@ -1,4 +1,4 @@
-function c = copulacdf(family, U, alpha)
+function c = copulacdf(family, varargin)
 %
 %   Function C = COPULACDF(FAMILY, U, ALPHA)
 %
@@ -7,46 +7,86 @@ function c = copulacdf(family, U, alpha)
 %   INPUT:
 %       FAMILY: One from {'AMH' 'Arch12' 'Arch14' 'Clayton' 'FGM' 'Frank'
 %               'GB' 'Gumbel' 'Ind' 'Joe'}
-%       U:      Quantiles (Nx2)       
-%       ALPHA:  Copula parameter (1xM)
-% 
+%       U: Nx2 vector of quantiles (u,v) in [0,1]^2.
+%       ALPHA: 1xM vector of copula parameters
+%           or 
+%   COPULACDF(FAMILY, U1, U2, ALPHA)
+%       U1, U2:  Matrices or row vectors.
+%                If U1 is (1xN) and U2 is (1xM), c is (NxM)
+%                If U1 is (NxM), U2 must be (N,M), N~=1.
+%       ALPHA:   Scalar copula parameter
+%
 %   OUTPUT
-%       C:      Copula CDF (NxM)
+%       C:      Copula CDF C(u,v|alpha) (NxM)
 %
 
 %   G. Evin, 2005
 %   D. Huard, 2006
 
 % Check alpha is in the domain covered by the family.
+if nargin == 3
+    U = varargin{1};
+    u = U(:,1);
+    v = U(:,2);
+    alpha = varargin{2};
+elseif nargin == 4
+    u = varargin{1};
+    v = varargin{2};
+    alpha = varargin{3};
+end
+
+% Check alpha is in the domain covered by the family.
 pass = check_alpha(family, alpha);
 if ~all(pass)
-    error('Some parameters are not included in the domain.\n%f', alpha(~pass))
+    error('Some parameters are not valid.\n%f', alpha(~pass))
 end
 
 % Check u,v are in [0,1]^2
-if any( (U < 0) | (U > 1) )
+if any( (u < 0) | (u > 1) | (v < 0) | (v > 1) )
     error('Some quantiles are outside the unit hypercube.')
 end
 
-sU = size(U);
-sA = size(alpha);
-
-N = sU(1);
-M = sA(2);
-L = sA(1);
-
-if L > 1 && L ~= N
-   error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
+if nargin == 3
+    % Shape checking
+    [NU, MU] = size(U);
+    [NA, MA] = size(alpha);
+    
+    if MU ~= 2
+        error('Bad shape. U is not Nx2, but rather %s.', mat2str(size(U)))
+    end
+    
+    % Reshape ALPHA
+    if NA == 1 
+        alpha = repmat(alpha, NU, 1);
+    elseif NA ~= NU && NU ~= 1
+        error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
+    end
+    
+    % Reshape u,v
+    if NU == 1
+        u = repmat(u, NA, MA);
+        v = repmat(v, NA, MA);
+    else
+        u = repmat(u, 1, MA);
+        v = repmat(v, 1, MA);
+    end
+elseif nargin == 4
+    if ~all(size(alpha)==1)
+        error('Alpha must be a scalar.')
+    end
+    su = size(u);
+    sv = size(v);
+    if ~any(su==1)
+        if all(su ==sv)
+            alpha = repmat(alpha, size(u));
+        else
+            error('If U1 and U2 are matrices, they must have the same size.')
+        end
+    else
+        [u,v] = meshgrid(u,v);
+        alpha = repmat(alpha, size(u));
+    end
 end
-
-% Shape vectors into matrices to compute the pdf for all values of (u,v)
-% and all parameters without loops.
-u = U(:,1);
-v = U(:,2);
-u = repmat(u, 1, M);
-v = repmat(v, 1, M);
-alpha = repmat(alpha, N, 1);
-
 % Compute copula cdf
 switch lower(family)
     case 'ind' % Independent

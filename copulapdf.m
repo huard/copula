@@ -1,4 +1,4 @@
-function c = copulapdf(family, U, alpha)
+function c = copulapdf(family, varargin)
 %
 %   FUNCTION C = COPULAPDF(FAMILY, U, ALPHA)
 %
@@ -8,12 +8,15 @@ function c = copulapdf(family, U, alpha)
 %       FAMILY: one of {'ind', 'gaussian', 'gumbel' 'clayton' 'frank' 'amh' 'joe' 'fgm' 'arch12' 'arch14'}       
 %       U: Nx2 vector (u,v) in [0,1]^2.
 %       ALPHA: 1xM vector of copula parameters
-%           or 
-%       U: 1x2 vector (u,v) in [0,1]^2.
-%       ALPHA: NxM vector of copula parameters. 
+%           or
+%   COPULAPDF(FAMILY, U1, U2, ALPHA)
+%       U1, U2:  Matrices or row vectors.
+%                If U1 is (1xN) and U2 is (1xM), c is (NxM)
+%                If U1 is (NxM), U2 must be (N,M).
+%       ALPHA:   Scalar copula parameter
 %
-%   OUTPUTS
-%       C: Copula density C(u,v|ALPHA) (NxM).
+%   OUTPUT
+%       C:       Copula density c(u,v|ALPHA) (NxM).
 
 %   Guillaume EVIN, 13 May, 2004.
 %   D. Huard, Nov. 2006
@@ -23,6 +26,16 @@ function c = copulapdf(family, U, alpha)
 % Replace Infs with realmax. 
 % Try to determine whether NaNs are underflow or overflow, and replace with
 % eps or realmax.
+if nargin == 3
+    U = varargin{1};
+    u = U(:,1);
+    v = U(:,2);
+    alpha = varargin{2};
+elseif nargin == 4
+    u = varargin{1};
+    v = varargin{2};
+    alpha = varargin{3};
+end
 
 % Check alpha is in the domain covered by the family.
 pass = check_alpha(family, alpha);
@@ -31,46 +44,61 @@ if ~all(pass)
 end
 
 % Check u,v are in [0,1]^2
-if any( (U < 0) | (U > 1) )
+if any( (u < 0) | (u > 1)) | any((v < 0) | (v > 1) )
     error('Some quantiles are outside the unit hypercube.')
 end
 
-% Shape checking
-[NU, MU] = size(U);
-[NA, MA] = size(alpha);
-
-if MU ~= 2
-    error('Bad shape. U is not Nx2, but rather %s.', mat2str(size(U)))
+if nargin == 3
+    % Shape checking
+    [NU, MU] = size(U);
+    [NA, MA] = size(alpha);
+    
+    if MU ~= 2
+        error('Bad shape. U is not Nx2, but rather %s.', mat2str(size(U)))
+    end
+    
+    % Reshape ALPHA
+    if NA == 1 
+        alpha = repmat(alpha, NU, 1);
+    elseif NA ~= NU && NU ~= 1
+        error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
+    end
+    
+    % Reshape u,v
+    if NU == 1
+        u = repmat(u, NA, MA);
+        v = repmat(v, NA, MA);
+    else
+        u = repmat(u, 1, MA);
+        v = repmat(v, 1, MA);
+    end
+elseif nargin == 4
+    if ~all(size(alpha)==1)
+        error('Alpha must be a scalar.')
+    end
+    su = size(u);
+    sv = size(v);
+    if ~any(su==1)
+        if all(su ==sv)
+            alpha = repmat(alpha, size(u));
+        else
+            error('If U1 and U2 are matrices, they must have the same size.')
+        end
+    else
+        [u,v] = meshgrid(u,v);
+        alpha = repmat(alpha, size(u));
+    end
 end
-
-% Reshape ALPHA
-if NA == 1 
-    alpha = repmat(alpha, NU, 1);
-elseif NA ~= NU && NU ~= 1
-    error('Number of parameters must be 1, identical to number of couples in U, or a row vector.')
-end
-
-% Reshape u,v
-u = U(:,1);
-v = U(:,2);
-if NU == 1
-    u = repmat(u, NA, MA);
-    v = repmat(v, NA, MA);
-else
-    u = repmat(u, 1, MA);
-    v = repmat(v, 1, MA);
-end
-
 switch lower(family)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ellipitical copulas %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     case 'gaussian'
         v1 = norminv(u);
         v2 = norminv(v);
-	% Octave ----
+        % Octave ----
         %v1 = normal_inv(u);
         %v2 = normal_inv(v);
-	% -----------
+        % -----------
         c = (1./sqrt(1-alpha.^2)).*exp(-(v1.^2+v2.^2-(2.*alpha).*v1.*v2)./(2*(1-alpha.^2)) + (v1.^2+v2.^2)./2);
         
         
@@ -98,8 +126,8 @@ switch lower(family)
         % (exp(-alpha*u)-1)(exp(-alpha*v)-1)/(exp(-alpha)-1))
         
         c = alpha.* exp(alpha.*(1 + u + v)) .* (-1 + exp(alpha)) ./ (exp(alpha.*(u + v)) ...
-              - exp(alpha).*(-1 + exp(alpha.*u) + exp(alpha.*v))).^2;
-                
+            - exp(alpha).*(-1 + exp(alpha.*u) + exp(alpha.*v))).^2;
+        
     case 'frank_genest'
         % The frank copula from Genest (1987))
         % The alphaameterization is different
