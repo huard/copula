@@ -1,4 +1,5 @@
 % TEST COPULAPDF
+warning off COPULA:BadParameter
 fprintf('Test copulapdf ... ')
 families = {'ind', 'gaussian', 'gumbel' 'clayton' 'frank' 'amh' 'joe' 'fgm' 'arch12' 'arch14'};
 pdf = copulapdf('gumbel', [[.3,.4];[.5,.6]], [4,5,6]);

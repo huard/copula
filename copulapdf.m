@@ -118,15 +118,37 @@ switch lower(family)
         
     case 'clayton'
         % (u^(-a)+v^(-a)-1)^(-(1+2*a)/a)*v^(-a-1)*u^(-a-1)+(u^(-a)+v^(-a)-1)^(-(1+2*a)/a)*u^(-a-1)*v^(-a-1)*a 
-        C1 = copulacdf('clayton',[u(:,1),v(:,1)], alpha(1,:));
-        c= (u.^(-alpha-1)).*(v.^(-alpha-1)).*(alpha+1).*C1.^(1+2.*alpha);
+        %C1 = copulacdf('clayton',[u(:,1),v(:,1)], alpha(1,:));
+        %c= (u.^(-alpha-1)).*(v.^(-alpha-1)).*(alpha+1).*C1.^(1+2.*alpha);
+        % For some values of u,v, t1, t2 are Inf, t8 becomes 0 and we get
+        % Nans... can we solve this problem using multiple precision ?
+        t1 = u .^ (-alpha);
+        t2 = v .^ (-alpha);
+        t8 = (t1 + t2 - 1) .^ (-(1 + 2 * alpha) ./ alpha);
+        t9 = -alpha - 1;
+        t10 = v .^ t9;
+        t12 = u .^ t9;
+        t13 = t8 .* t10 .* t12;
+        c = t13 + t13 .* alpha;
+        
         
     case 'frank'
         % the frank copula : C(u,v) = (-1/alpha)*(1 +
         % (exp(-alpha*u)-1)(exp(-alpha*v)-1)/(exp(-alpha)-1))
-        
-        c = alpha.* exp(alpha.*(1 + u + v)) .* (-1 + exp(alpha)) ./ (exp(alpha.*(u + v)) ...
-            - exp(alpha).*(-1 + exp(alpha.*u) + exp(alpha.*v))).^2;
+        t3 = exp(-alpha .* (u + v));
+        t5 = exp(-alpha);
+        t6 = alpha .* u;
+        t7 = alpha .* v;
+        t9 = exp(-t6 - t7);
+        t11 = exp(-t6);
+        t12 = exp(-t7);
+        t14 = (t5 + t3 - t11 - t12) .^ 2;
+        c = -t3 .* alpha .* (-1 + t5 + t3 - t9) ./ t14;
+
+ %       t1 = u+v
+ %       t2 = exp(alpha)
+ %       c = alpha.* exp(alpha.*(1 + t1)) .* (-1 + t2) ./ (exp(alpha.*t1) ...
+ %           - t2.*(-1 + exp(alpha.*u) + exp(alpha.*v))).^2;
         
     case 'frank_genest'
         % The frank copula from Genest (1987))
@@ -177,10 +199,37 @@ switch lower(family)
         
     case 'arch14'
         % the 14th archimedean copula in Nelsen.
-        v1 = (-1 + u.^(-1./alpha)).^alpha;
-        v2 = (-1 + v.^(-1./alpha)).^alpha;
-        c = v1.*v2.*((v1+v2).^(-2+1./alpha)).*(1+(v1+v2).^(1./alpha)).^(-2-alpha).*(-1+alpha+2.*alpha.*...
-            ((v1+v2).^(1./alpha)))./(alpha.*u.*v.*(-1+u.^(1./alpha)).*(-1+v.^(1./alpha)));
+        %v1 = (-1 + u.^(-1./alpha)).^alpha;
+        %v2 = (-1 + v.^(-1./alpha)).^alpha;
+        %c = v1.*v2.*((v1+v2).^(-2+1./alpha)).*(1+(v1+v2).^(1./alpha)).^(-2-alpha).*(-1+alpha+2.*alpha.*...
+        %((v1+v2).^(1./alpha)))./(alpha.*u.*v.*(-1+u.^(1./alpha)).*(-1+v.^(1./alpha)));
+        t1 = 1 ./ alpha;
+        t2 = u .^ (-t1);
+        t3 = t2 - 1;
+        t4 = t3 .^ alpha;
+        t5 = v .^ (-t1);
+        t6 = t5 - 1;
+        t7 = t6 .^ alpha;
+        t8 = t4 + t7;
+        t9 = t8 .^ t1;
+        t10 = 1 + t9;
+        t11 = t10 .^ (-alpha);
+        t12 = t9 .^ 2;
+        t13 = t11 .* t12;
+        t15 = 1 ./ v;
+        t17 = 1 ./ t6;
+        t18 = t5 .* t15 .* t17;
+        t20 = t8 .^ 2;
+        t21 = replaceInf(1 ./ t20);
+        t22 = t10 .^ 2;
+        t24 = t21 ./ t22;
+        t27 = t2 ./ u;
+        t28 = 1 ./ t3;
+        t29 = t27 .* t28;
+        t32 = t11 .* t9;
+        t34 = t7 .* t5;
+        t39 = 1 ./ t10;
+        c = t13 .* t7 .* t18 .* t24 .* t4 .* t29 - t32 .* t1 .* t34 .* t15 .* t17 .* t21 .* t4 .* t27 .* t28 .* t39 + t32 .* t4 .* t29 .* t21 .* t39 .* t7 .* t18 + t13 .* t4 .* t29 .* t24 .* t1 .* t34 .* t15 .* t17;
         
     case 'fgm'
         % the Farlie-Gumbel-Morgenstern Copula
@@ -214,3 +263,22 @@ switch lower(family)
     otherwise
         error('Copula family ''%s'' not recognized.', family)
 end
+
+if any(any(isnan(c)))
+    find(isnan(c))
+    warning('NaN in %s at!', family)
+end
+
+function x = replace0(x)
+% 
+% Return x with zeros replaced by eps.
+%
+i = x == 0;
+x(i) = eps;
+
+function x = replaceInf(x)
+%
+% Return realmax instead of Inf.
+%
+i = isinf(x);
+x(i) = realmax;

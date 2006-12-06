@@ -25,7 +25,7 @@ for i=1:length(family_generated)
         U = copularnd(f, alpha, N);
         
         % Compute weight of each copula family.
-        p(i, :, k)  = bcs(family_tested, U, [0.01, .97])
+        p(i, :, k)  = bcs(family_tested, U, [0.01, .98]);
     end
 end
 

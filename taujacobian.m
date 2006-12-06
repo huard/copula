@@ -53,7 +53,7 @@ t8 = log(t7);
 t9 = alpha .* t8;
 t13 = dilog(t2);
 t17 = alpha .^ 2;
-j = -4 / 3 * (-3 * alpha + 3 * alpha .* t2 - t5 + t5 .* t2 + 6 * t9 - 6 * t9 .* t2 + 6 * t13 - 6 * t13 .* t2 + 3 * t2 .* t17) ./ t17 ./ alpha ./ t7;
+j = -4 / 3 * (-3 * alpha + 3 * alpha .* t2 - t5 + t5 .* t2 + 6 * t7.* real((t9 + t13)) + 3 * t2 .* t17) ./ t17 ./ alpha ./ t7;
 
         
     case 'gumbel'
@@ -78,5 +78,8 @@ j = -4 / 3 * (-3 * alpha + 3 * alpha .* t2 - t5 + t5 .* t2 + 6 * t9 - 6 * t9 .* 
 end
 
 if any(j<0)
-    error('Negative value in taujacobian')
+    error('Negative value in taujacobian.')
+end
+if ~isreal(j)
+    error('Imaginary value in taujacobian.')
 end
