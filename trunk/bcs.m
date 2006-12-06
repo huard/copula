@@ -63,8 +63,8 @@ for i=1:length(family)
         
         % Translate the boundaries on tau in copula parameters.
         bounds_alpha = copulaparam(family{i}, bounds_tau);
-        alpha_min = bounds_alpha(1)
-        alpha_max = bounds_alpha(2)
+        alpha_min = bounds_alpha(1);
+        alpha_max = bounds_alpha(2);
         
         % Integrate the likelihood over the parameter range.
         p(i) = quadg('posterior',alpha_min, alpha_max, 1e-4, [0,128], family{i}, U, prior_tau);

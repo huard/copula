@@ -1,5 +1,7 @@
 % TEST TAUJACOBIAN
 % First check that p(alpha) is normalized properly. 
+warning off MATLAB:fzero:UndeterminedSyntax
+
 fprintf('Test taujacobian ... ')
 families = {'Clayton', 'Gumbel', 'Gaussian', 'AMH', 'FGM', 'Arch12', 'Arch14', 'Frank'};
 for i=1:length(families)
