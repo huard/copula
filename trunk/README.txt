@@ -1,4 +1,4 @@
-COPULA Open Source Project
+COPULA BCS
 Hosted at code.google.com/p/copula/
 
 This set of Matlab (TM) files provides the functions needed to estimate the 
@@ -43,11 +43,7 @@ tauboundaries: Return the domain spanned by Kendall's tau.
 
 taujacobian: Return the derivative of tau(alpha) with respect to alpha.
 
-
-TODO: 
-Add a formula to compute empirically Kendall's tau. 
-Add a TestSuite for the random generator.
-Check the results of BCS using synthetic data. 
+TODO: Find a solution to finite precision problems, ie NaN and Infs creeping out from copulapdf. 
 
 The code is written mostly by G. Evin and D. Huard. It extends functions originaly written by P. Perkins.
 

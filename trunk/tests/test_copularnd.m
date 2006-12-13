@@ -6,7 +6,7 @@ family = {'gaussian', 'clayton', 'frank', 'gumbel',...
 %Test correlation of generated sample.
 %It should match the tau corresponding to the parameter given to
 %copularnd.
-N = 500;
+N = 800;
 for i=1:length(family)
     f = family{i};
     bounds= tauboundaries(f);

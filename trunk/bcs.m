@@ -21,7 +21,12 @@ function p = bcs(family, U, boundaries, prior_tau)
 %       where Lambda is the interval spanned by Kendall's tau. This 
 %       interval is equal the intersection of the copula boundaries 
 %       on tau and the boundaries specified by the user. 
-
+%
+%       For some data and parameters, the pdf returned by copulapdf is Inf
+%       or 0, which ruins the integration. To avoid this problem, try to
+%       restrict the integration domain (do not use [-1,1], this won't
+%       work, [.-97, .97] is a better choice, and even then, problems may
+%       appear).
 
 %   Reference
 %   Huard, D., Évin, G. and Favre, A-C. Bayesian Copula Selection, 
