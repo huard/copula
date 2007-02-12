@@ -6,12 +6,12 @@ function u = lambdaarch(t, family, alpha)
 %    differents copulas, lambda(t) = g(t)/g'(t) where g is the generator
 %
 %    INPUTS   
-%	FAMILY: One of {'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'} 	
-%	t:      Vector that lies in [0,1]
+%       t:      Vector that lies in [0,1]
+%       FAMILY: One of {'gumbel' 'clayton' 'frank' 'gb' 'amh' 'joe'} 	
 %       ALPHA:  Parameter of the copula
 %
 %    OUTPUTS	
-% 	U:      Vector of lambda at points t.
+%       U:      Vector of lambda at points t.
 %
 % Guillaume EVIN
 %
@@ -32,22 +32,12 @@ if any(~pass)
     error('Bad parameters: %s', num2str(alpha(~pass)))
 end
 
-% avoid a division by zero
-% denominator = archemedeangeneratorderivative(family, t, alpha)
-% nonzero = (denominator ~= 0);
-% zero = (denominator == 0);
-% 
-% u(nonzero) = archemedeangenerator(family, t(nonzero), alpha) ./ denominator(nonzero);
-% 
-% u(zero) = sign(archemedeangenerator(family, t(zero), alpha)).*realmax;
+den = archgender(t,family,alpha);
+nz = (den~=0);
+z = (den == 0);
 
-
-den = archemedeangeneratorderivative(t,family,alpha);
-nonzero = (den~=0);
-zero= (den == 0);
-
-u(nonzero) = archemedeangenerator(t(nonzero),family,alpha)./archemedeangeneratorderivative(t(nonzero),family,alpha);
-u(zero) = sign(archemedeangenerator(t(zero),family,alpha)).*realmax;
+u(nz) = archgen(t(nz),family,alpha)./archgender(t(nz),family,alpha);
+u(z) = sign(archgen(t(z),family,alpha)).*realmax;
 
 function y = archemedeangenerator2(family, x, alpha)
 %

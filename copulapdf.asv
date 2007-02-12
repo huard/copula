@@ -116,14 +116,20 @@ switch lower(family)
         % (u^(-a)+v^(-a)-1)^(-(1+2*a)/a)*v^(-a-1)*u^(-a-1)+(u^(-a)+v^(-a)-1)^(-(1+2*a)/a)*u^(-a-1)*v^(-a-1)*a 
         %C1 = copulacdf('clayton',[u(:,1),v(:,1)], alpha(1,:));
         %c= (u.^(-alpha-1)).*(v.^(-alpha-1)).*(alpha+1).*C1.^(1+2.*alpha);
+        z=(u==0)|(v==0);
+        c=zeros(size(z));
+        c(z)=0;
+        u=u(z);
+        v=v(z);
         t1 = u .^ (-alpha);
         t2 = v .^ (-alpha);
-        t8 = (t1 + t2 - 1) .^ (-(1 + 2 * alpha) ./ alpha);
+        
+        t8 = (-(1 + 2 * alpha) ./ alpha).*log(t1 + t2 - 1);
         t9 = -alpha - 1;
-        t10 = v .^ t9;
-        t12 = u .^ t9;
-        t13 = t8 .* t10 .* t12;
-         c = t13 + t13 .* alpha;
+        t10 = t9.*log(v);
+        t12 = t9.*log(u);
+        t13 = t8 + t10 + t12;
+        c = exp(t13 + log(1+alpha));
         
     case 'frank'
         % the frank copula : C(u,v) = (-1/alpha)*(1 +

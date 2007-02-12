@@ -1,4 +1,4 @@
-function bounds = alphaboundaries(family);
+function bounds = alphaboundaries(family)
 %
 %   FUNCTION BOUNDS, FUNC = ALPHABOUNDARIES(FAMILY)
 %
@@ -13,9 +13,7 @@ function bounds = alphaboundaries(family);
 %       BOUNDS: [alpha_min, alpha_max]
 %               Domain spanned by copula parameter for FAMILY.
 %
-
 %   D. Huard, Nov. 2006
-%   Pourquoi tau_max de amh etait a .3269 au lieu de 1/3 ?
 
 taubounds = tauboundaries(family);
 bounds = copulaparam(family, taubounds);

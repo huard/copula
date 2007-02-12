@@ -15,7 +15,6 @@ function bounds = tauboundaries(family);
 %
 
 %   D. Huard, Nov. 2006
-%   Pourquoi tau_max de amh etait a .3269 au lieu de 1/3 ?
 
 tau_min = -1;
 tau_max = 1;

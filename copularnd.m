@@ -20,14 +20,6 @@ function u = copularnd(family, varargin)
 %       copularnd('t', [.8, 3], 5)
 % 
 
-%   TODO:   
-%           Check arguments at beginning. 
-%           Remove dependence on indicatrice.
-%           Merge what can be merged.
-%           Limit copula parameter to scalar values. There is no point in
-%           supporting correlation matrices. 
-
-
 if strcmp(lower(family), 'ind')
     n = varargin{1};
     u = rand(n,2);
@@ -92,9 +84,7 @@ else
                     % copula.  The inversion must be done numerically.
                     u2 = condCDFinv(@conditionalcdf,u1,p,alpha,family);
                     u = [u1 u2]; 
-            end
-            
-            
+            end           
     end
 end
 
