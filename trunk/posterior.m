@@ -35,7 +35,6 @@ pr_tau = log(prior_tau(copulastat(family, alpha)));
 % Combine likelihood and priors
 p = exp(likelihood + prior_alpha + pr_tau);
 
-
 if any(isnan(p))
     error('Nan')
 end

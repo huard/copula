@@ -234,4 +234,3 @@ wf=2*(1-bp.^2)./(fx.*fx);
 if (m+m) > n, bp(m)=0; end
 if ~((m+m) == n), m=m-1; end
 jj=1:m; n1j=(n+1-jj); bp(n1j)=-bp(jj); wf(n1j)=wf(jj);
-% end
