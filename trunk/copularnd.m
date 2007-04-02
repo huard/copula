@@ -71,7 +71,7 @@ else
                     % The inverse conditional CDF has a closed form for this
                     % copula.
                     if abs(alpha) > log(realmax)
-                        u2 = (u1 < 0) + sign(alpha).*u1; % u1 or 1-u1
+                        u2 = (alpha < 0) + sign(alpha).*u1; % u1 or 1-u1
                     elseif abs(alpha) > sqrt(eps)
                         u2 = -log((exp(-alpha.*u1).*(1-p)./p + exp(-alpha))./(1 + exp(-alpha.*u1).*(1-p)./p))./alpha;
                     else
