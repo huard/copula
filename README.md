@@ -1,3 +1,6 @@
+
+[![DOI](https://zenodo.org/badge/32111197.svg)](https://zenodo.org/badge/latestdoi/32111197)
+
 COPULA BCS
 ==========
 
