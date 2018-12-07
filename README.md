@@ -1,8 +1,8 @@
 
 [![DOI](https://zenodo.org/badge/32111197.svg)](https://zenodo.org/badge/latestdoi/32111197)
 
-COPULA BCS
-==========
+Bayesian Copula Selection
+=========================
 
 This set of Matlab (TM) files provides the functions needed to estimate the 
 best copula, given a set of copulas and fractiles. 
